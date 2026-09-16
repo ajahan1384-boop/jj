@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ابزار سایزینگ باتری لیفتراک</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --card-bg: #ffffff;
+    --border: #dde3ea;
+    --text: #1f2937;
+    --text-muted: #6b7280;
+    --accent: #1d6f8c;
+    --accent-dark: #14536a;
+    --accent-light: #e6f2f6;
+    --warn-bg: #fff7e6;
+    --warn-border: #f0b429;
+    --error-bg: #fdecec;
+    --error-border: #e5484d;
+    --ok-bg: #eafaf1;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height:1.7;
+  }
+  header { background: var(--accent-dark); color:#fff; padding: 18px 24px; }
+  header h1 { margin:0; font-size:1.3rem; }
+  header p { margin:4px 0 0; font-size:.85rem; color:#cfe8ef; }
+  main { max-width:1180px; margin:0 auto; padding: 20px; display:grid; grid-template-columns: 380px 1fr; gap:20px; align-items:start; }
+  @media (max-width: 900px){ main{ grid-template-columns: 1fr; } }
+  .card { background: var(--card-bg); border:1px solid var(--border); border-radius: var(--radius); padding:18px 20px; }
+  .card h2 { margin-top:0; font-size:1.05rem; border-bottom:1px solid var(--border); padding-bottom:8px;}
+  .field { margin-bottom:14px; }
+  label { display:block; font-size:.85rem; margin-bottom:4px; color:var(--text); font-weight:600;}
+  .hint { font-size:.75rem; color:var(--text-muted); margin-top:3px;}
+  input[type=number]{
+    width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:6px; font-size:.95rem;
+    font-family:inherit; background:#fbfcfd;
+  }
+  input[type=number]:focus{ outline:2px solid var(--accent); border-color:var(--accent); }
+  fieldset { border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin:0 0 14px; }
+  legend { font-size:.85rem; font-weight:600; padding:0 6px; }
+  .radio-row{ display:flex; align-items:center; gap:8px; margin:6px 0; font-size:.9rem; }
+  .radio-row label{ margin:0; font-weight:400; }
+  .error-text{ color:#c0272d; font-size:.78rem; margin-top:3px; display:none; }
+  .field.invalid input{ border-color:#c0272d; }
+  .field.invalid .error-text{ display:block; }
+  button{ cursor:pointer; border:none; border-radius:8px; font-size:.95rem; padding:11px 16px; font-family:inherit; }
+  .btn-primary{ background:var(--accent); color:#fff; width:100%; font-weight:700; }
+  .btn-primary:hover{ background:var(--accent-dark); }
+  .btn-secondary{ background:transparent; color:var(--text-muted); width:100%; margin-top:8px; border:1px solid var(--border); }
+  .results-empty{ color:var(--text-muted); font-size:.9rem; padding:30px 10px; text-align:center; }
+  .banner{ padding:12px 14px; border-radius:8px; font-size:.85rem; margin-bottom:14px; border:1px solid; }
+  .banner.warn{ background:var(--warn-bg); border-color:var(--warn-border); color:#7a5200; }
+  .banner.error{ background:var(--error-bg); border-color:var(--error-border); color:#8a1f24; }
+  .rec-title{ font-size:1.15rem; font-weight:700; color:var(--accent-dark); margin-bottom:4px;}
+  .rec-sub{ color:var(--text-muted); font-size:.85rem; margin-bottom:14px;}
+  .stat-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:18px;}
+  .stat{ background:var(--accent-light); border-radius:8px; padding:10px 12px; }
+  .stat .k{ font-size:.72rem; color:var(--accent-dark); font-weight:600; }
+  .stat .v{ font-size:1rem; font-weight:700; margin-top:2px; }
+  h3.sec-title{ font-size:.95rem; margin:18px 0 8px; }
+  p.sec-caption{ font-size:.8rem; color:var(--text-muted); margin:0 0 8px; }
+  table{ width:100%; border-collapse:collapse; font-size:.82rem; margin-bottom:18px; }
+  th, td{ border:1px solid var(--border); padding:7px 8px; text-align:center; }
+  th{ background:#f1f5f8; font-weight:700; }
+  tr.chosen{ background: var(--ok-bg); font-weight:700; }
+  .viz-wrap{ overflow-x:auto; }
+  details{ margin-top:6px; font-size:.8rem; color:var(--text-muted); }
+  details summary{ cursor:pointer; font-weight:600; color:var(--accent-dark); }
+  details ul{ margin:8px 0 0; padding-inline-start:20px; }
+  footer{ text-align:center; color:var(--text-muted); font-size:.75rem; padding:20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ابزار سایزینگ باتری لیفتراک</h1>
+  <p>محاسبه و انتخاب مناسب‌ترین باتری تراکشن بر اساس ابعاد باکس، ولتاژ و ظرفیت — نسخه ۰ (ابزار داخلی)</p>
+</header>
+<main>
+  <section class="card">
+    <h2>اطلاعات ورودی</h2>
+    <form id="sizing-form" novalidate>
+      <div class="field" id="f-length">
+        <label for="in-length">طول باکس باتری (میلی‌متر)</label>
+        <input type="number" id="in-length" min="1" step="any" placeholder="مثلاً 990">
+        <div class="error-text">طول باکس را به‌صورت عدد مثبت وارد کنید.</div>
+      </div>
+      <div class="field" id="f-width">
+        <label for="in-width">عرض باکس باتری (میلی‌متر)</label>
+        <input type="number" id="in-width" min="1" step="any" placeholder="مثلاً 415">
+        <div class="error-text">عرض باکس را به‌صورت عدد مثبت وارد کنید.</div>
+      </div>
+      <div class="field" id="f-height">
+        <label for="in-height">ارتفاع مجاز باکس باتری (میلی‌متر)</label>
+        <input type="number" id="in-height" min="1" step="any" placeholder="مثلاً 620">
+        <div class="hint">ارتفاع در دسترس زیر درپوش؛ با ارتفاع کل سلول به‌همراه ترمینال (TH) مقایسه می‌شود.</div>
+        <div class="error-text">ارتفاع باکس را به‌صورت عدد مثبت وارد کنید.</div>
+      </div>
+      <div class="field" id="f-voltage">
+        <label for="in-voltage">ولتاژ باتری (ولت)</label>
+        <input type="number" id="in-voltage" min="2" step="2" placeholder="مثلاً 48">
+        <div class="hint">باید مضربی از ۲ باشد (هر سلول ۲ ولت است).</div>
+        <div class="error-text">ولتاژ باید عددی مثبت و مضربی از ۲ باشد.</div>
+      </div>
+
+      <fieldset>
+        <legend>حالت تعیین ظرفیت</legend>
+        <div class="radio-row">
+          <input type="radio" name="cap-mode" id="mode-customer" value="customer" checked>
+          <label for="mode-customer">ظرفیت مشخص‌شده توسط مشتری</label>
+        </div>
+        <div class="radio-row">
+          <input type="radio" name="cap-mode" id="mode-auto" value="auto">
+          <label for="mode-auto">بیشترین ظرفیت ممکن در این ابعاد (سایزینگ خودکار)</label>
+        </div>
+      </fieldset>
+
+      <div class="field" id="f-capacity">
+        <label for="in-capacity">ظرفیت درخواستی مشتری (آمپرساعت، C5)</label>
+        <input type="number" id="in-capacity" min="1" step="any" placeholder="مثلاً 625">
+        <div class="error-text">ظرفیت درخواستی را وارد کنید یا حالت «بیشترین ظرفیت ممکن» را انتخاب کنید.</div>
+      </div>
+
+      <button type="submit" class="btn-primary">محاسبه و سایزینگ</button>
+      <button type="button" class="btn-secondary" id="btn-reset">پاک‌کردن فرم</button>
+    </form>
+  </section>
+
+  <section class="card" id="results-card">
+    <h2>نتیجه سایزینگ</h2>
+    <div id="results-body">
+      <div class="results-empty">اطلاعات باکس، ولتاژ و ظرفیت را وارد و «محاسبه و سایزینگ» را بزنید تا باتری پیشنهادی و نمای بالا نمایش داده شود.</div>
+    </div>
+  </section>
+</main>
+<footer>ابزار داخلی کارشناسان فروش — فقط همین یک فایل را در مرورگر باز کنید؛ بدون نیاز به سرور یا اینترنت.</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===================== داده جدول باتری‌ها =====================
+  // طول (length) هر ردیف = طول یک سلول تکی (mm). عرض سلول (cellWidth) برای کل استاندارد ثابت است.
+  // TH = ارتفاع کل سلول با ترمینال؛ H = ارتفاع بدنه سلول (بدون ترمینال).
+  var STANDARDS = {
+    DIN: {
+      key: 'DIN', label: 'DIN (عرض سلول ۱۹۸ میلی‌متر)', cellWidth: 198, series: 'PzS',
+      groups: [
+        { typeAh: 80, H: 450, TH: 480, rows: [
+          { plates: 2, length: 47, capacity: 160, weight: 11.7, electrolyte: 2.5 },
+          { plates: 3, length: 65, capacity: 240, weight: 16.5, electrolyte: 3.5 },
+          { plates: 4, length: 83, capacity: 320, weight: 21.2, electrolyte: 4.5 },
+          { plates: 5, length: 99, capacity: 400, weight: 26.4, electrolyte: 5.5 },
+          { plates: 6, length: 119, capacity: 480, weight: 31.7, electrolyte: 6.6 },
+          { plates: 7, length: 137, capacity: 560, weight: 36.6, electrolyte: 7.7 },
+          { plates: 8, length: 155, capacity: 640, weight: 41.5, electrolyte: 8.8 },
+          { plates: 9, length: 173, capacity: 720, weight: 50.6, electrolyte: 14.4 },
+          { plates: 10, length: 191, capacity: 800, weight: 55.8, electrolyte: 15.6 }
+        ]},
+        { typeAh: 70, H: 370, TH: 400, rows: [
+          { plates: 2, length: 45, capacity: 140, weight: 10.8, electrolyte: 2.4 },
+          { plates: 3, length: 63, capacity: 210, weight: 14.9, electrolyte: 3.1 },
+          { plates: 4, length: 81, capacity: 280, weight: 19.0, electrolyte: 4 },
+          { plates: 5, length: 99, capacity: 350, weight: 23.6, electrolyte: 4.9 },
+          { plates: 6, length: 118, capacity: 420, weight: 28.3, electrolyte: 5.6 },
+          { plates: 7, length: 136, capacity: 490, weight: 31.9, electrolyte: 6.8 },
+          { plates: 8, length: 154, capacity: 560, weight: 36.1, electrolyte: 7.7 },
+          { plates: 9, length: 173, capacity: 630, weight: 42.5, electrolyte: 11.8 },
+          { plates: 10, length: 191, capacity: 700, weight: 44.5, electrolyte: 10.9 }
+        ]},
+        { typeAh: 55, H: 310, TH: 340, rows: [
+          { plates: 2, length: 45, capacity: 110, weight: 8.8, electrolyte: 2 },
+          { plates: 3, length: 63, capacity: 165, weight: 12.4, electrolyte: 2.6 },
+          { plates: 4, length: 81, capacity: 220, weight: 16.6, electrolyte: 3.4 },
+          { plates: 5, length: 99, capacity: 275, weight: 20.4, electrolyte: 4.2 },
+          { plates: 6, length: 118, capacity: 330, weight: 24.1, electrolyte: 5 },
+          { plates: 7, length: 136, capacity: 385, weight: 28.0, electrolyte: 7.8 },
+          { plates: 8, length: 154, capacity: 440, weight: 32.6, electrolyte: 9.1 },
+          { plates: 9, length: 173, capacity: 495, weight: 36.3, electrolyte: 10.2 },
+          { plates: 10, length: 191, capacity: 550, weight: 40.1, electrolyte: 11.3 }
+        ]},
+        { typeAh: 140, note: 'جدید', H: 685, TH: 715, rows: [
+          { plates: 2, length: 45, capacity: 280, weight: 17.5, electrolyte: 3 },
+          { plates: 3, length: 65, capacity: 420, weight: 24.7, electrolyte: 4.7 },
+          { plates: 4, length: 83, capacity: 560, weight: 32.5, electrolyte: 6.3 },
+          { plates: 5, length: 99, capacity: 700, weight: 40.5, electrolyte: 7.7, estimatedLength: true },
+          { plates: 6, length: 119, capacity: 840, weight: 46.7, electrolyte: 9.3 },
+          { plates: 7, length: 137, capacity: 980, weight: 53.9, electrolyte: 10.8 },
+          { plates: 8, length: 155, capacity: 1120, weight: 52.6, electrolyte: 10.3 },
+          { plates: 9, length: 173, capacity: 1260, weight: 68.6, electrolyte: 14, estimatedLength: true },
+          { plates: 10, length: 191, capacity: 1400, weight: 76.0, electrolyte: 15.4, estimatedLength: true }
+        ]},
+        { typeAh: 125, note: 'جدید', H: 571, TH: 601, rows: [
+          { plates: 2, length: 45, capacity: 250, weight: 14.7, electrolyte: 2.5 },
+          { plates: 3, length: 63, capacity: 375, weight: 21.2, electrolyte: 3.9 },
+          { plates: 4, length: 81, capacity: 500, weight: 27.3, electrolyte: 5.2 },
+          { plates: 5, length: 99, capacity: 625, weight: 34.1, electrolyte: 6.4 },
+          { plates: 6, length: 118, capacity: 750, weight: 40.3, electrolyte: 7.8 },
+          { plates: 7, length: 136, capacity: 875, weight: 47.3, electrolyte: 9 },
+          { plates: 8, length: 154, capacity: 1000, weight: 52.6, electrolyte: 10.3 },
+          { plates: 9, length: 173, capacity: 1125, weight: 60.5, electrolyte: 11.6 },
+          { plates: 10, length: 191, capacity: 1250, weight: 67.1, electrolyte: 12.8 }
+        ]},
+        { typeAh: 100, H: 535, TH: 565, rows: [
+          { plates: 2, length: 47, capacity: 200, weight: 14.6, electrolyte: 3.1 },
+          { plates: 3, length: 65, capacity: 300, weight: 21.6, electrolyte: 4.5 },
+          { plates: 4, length: 83, capacity: 400, weight: 27.7, electrolyte: 5.8 },
+          { plates: 5, length: 101, capacity: 500, weight: 33.0, electrolyte: 7.2 },
+          { plates: 6, length: 119, capacity: 600, weight: 39, electrolyte: 8.6 },
+          { plates: 7, length: 137, capacity: 700, weight: 44.5, electrolyte: 10 },
+          { plates: 8, length: 155, capacity: 800, weight: 50.8, electrolyte: 11.3 },
+          { plates: 9, length: 173, capacity: 900, weight: 58.6, electrolyte: 12.8 },
+          { plates: 10, length: 191, capacity: 1000, weight: 62.4, electrolyte: 14.2 }
+        ]},
+        { typeAh: 150, H: 715, TH: 745, rows: [
+          { plates: 2, length: 45, capacity: 300, weight: 22.0, electrolyte: 7.1 },
+          { plates: 3, length: 63, capacity: 450, weight: 30.3, electrolyte: 8.8 },
+          { plates: 4, length: 81, capacity: 600, weight: 38.1, electrolyte: 10.4 },
+          { plates: 5, length: 99, capacity: 750, weight: 46.9, electrolyte: 12 },
+          { plates: 6, length: 118, capacity: 900, weight: 55, electrolyte: 13.7 },
+          { plates: 7, length: 136, capacity: 1050, weight: 63.6, electrolyte: 15.2 },
+          { plates: 8, length: 154, capacity: 1200, weight: 71.9, electrolyte: 16.8 },
+          { plates: 9, length: 173, capacity: 1350, weight: 81.3, electrolyte: 18.5 },
+          { plates: 10, length: 191, capacity: 1500, weight: 88.5, electrolyte: 20 }
+        ]}
+      ]
+    },
+    BS: {
+      key: 'BS', label: 'BS (عرض سلول ۱۵۸ میلی‌متر)', cellWidth: 158, series: 'PzB',
+      groups: [
+        { typeAh: 75, H: 509, TH: 539, rows: [
+          { plates: 2, length: 47, capacity: 150, weight: 8.1, electrolyte: 2 },
+          { plates: 3, length: 61, capacity: 225, weight: 11.6, electrolyte: 2.7 },
+          { plates: 4, length: 77, capacity: 300, weight: 15, electrolyte: 3.5 },
+          { plates: 5, length: 93, capacity: 375, weight: 18.4, electrolyte: 4.2 }
+        ]},
+        { typeAh: 65, H: 450, TH: 480, rows: [
+          { plates: 2, length: 47, capacity: 130, weight: 7.1, electrolyte: 1.8 },
+          { plates: 3, length: 61, capacity: 195, weight: 10, electrolyte: 2.4 },
+          { plates: 4, length: 77, capacity: 260, weight: 13, electrolyte: 3.1 },
+          { plates: 5, length: 93, capacity: 325, weight: 15.9, electrolyte: 3.7 }
+        ]},
+        { typeAh: 55, H: 400, TH: 430, rows: [
+          { plates: 2, length: 47, capacity: 110, weight: 6.3, electrolyte: 1.6 },
+          { plates: 3, length: 61, capacity: 165, weight: 8.9, electrolyte: 2.2 },
+          { plates: 4, length: 77, capacity: 220, weight: 11.5, electrolyte: 2.8 },
+          { plates: 5, length: 93, capacity: 275, weight: 14.1, electrolyte: 3.4 }
+        ]}
+      ]
+    }
+  };
+
+  // ===================== منطق سایزینگ =====================
+
+  // چیدمان N سلول به‌صورت چند ردیفه در باکس؛ rowDir مشخص می‌کند کدام بعد باکس محور «طول ردیف» است.
+  function layoutForOrientation(rowDir, cellLen, cellWidthStd, N, Lbox, Wbox) {
+    var rowSpan = rowDir === 'L' ? Lbox : Wbox;
+    var cellsPerRow = Math.floor(rowSpan / cellLen);
+    if (cellsPerRow < 1) return null;
+    var rowsNeeded = Math.ceil(N / cellsPerRow);
+    var usedAlongRow = (rowsNeeded === 1 ? N : cellsPerRow) * cellLen;
+    var usedAlongStack = rowsNeeded * cellWidthStd;
+    var lengthUsed = rowDir === 'L' ? usedAlongRow : usedAlongStack;
+    var widthUsed = rowDir === 'L' ? usedAlongStack : usedAlongRow;
+    if (lengthUsed > Lbox + 1e-9 || widthUsed > Wbox + 1e-9) return null;
+    return { rowDir: rowDir, cellsPerRow: cellsPerRow, rowsNeeded: rowsNeeded, lengthUsed: lengthUsed, widthUsed: widthUsed };
+  }
+
+  function buildCandidates(standardKey, N, Lbox, Wbox, Hbox) {
+    var std = STANDARDS[standardKey];
+    var out = [];
+    std.groups.forEach(function (group) {
+      if (group.TH > Hbox) return;
+      group.rows.forEach(function (row) {
+        ['L', 'W'].forEach(function (rowDir) {
+          var layout = layoutForOrientation(rowDir, row.length, std.cellWidth, N, Lbox, Wbox);
+          if (!layout) return;
+          var cand = {
+            standard: standardKey,
+            standardLabel: std.label,
+            series: std.series,
+            cellWidthStd: std.cellWidth,
+            groupTypeAh: group.typeAh,
+            groupNote: group.note || '',
+            H: group.H,
+            TH: group.TH,
+            plates: row.plates,
+            cellLength: row.length,
+            capacity: row.capacity,
+            unitWeight: row.weight,
+            unitElectrolyte: row.electrolyte,
+            estimatedLength: !!row.estimatedLength,
+            N: N,
+            rowDir: layout.rowDir,
+            cellsPerRow: layout.cellsPerRow,
+            rowsNeeded: layout.rowsNeeded,
+            lengthUsed: layout.lengthUsed,
+            widthUsed: layout.widthUsed,
+            totalWeight: Math.round(row.weight * N * 10) / 10
+          };
+          out.push(cand);
+        });
+      });
+    });
+    return out;
+  }
+
+  // ظرفیت بیشتر برنده است؛ در تساوی، تعداد ردیف کمتر (ساده‌تر)، سپس فضای اشغالی کمتر، سپس DIN
+  function compareCandidates(a, b) {
+    if (a.capacity !== b.capacity) return b.capacity - a.capacity;
+    if (a.rowsNeeded !== b.rowsNeeded) return a.rowsNeeded - b.rowsNeeded;
+    var areaA = a.lengthUsed * a.widthUsed, areaB = b.lengthUsed * b.widthUsed;
+    if (areaA !== areaB) return areaA - areaB;
+    if (a.standard !== b.standard) return a.standard === 'DIN' ? -1 : 1;
+    return 0;
+  }
+
+  function bestOf(list) {
+    if (!list || !list.length) return null;
+    return list.slice().sort(compareCandidates)[0];
+  }
+
+  function cellLabel(c) {
+    return c.plates + ' ' + c.series + ' ' + c.capacity + (c.estimatedLength ? '*' : '');
+  }
+
+  // کدهای فنی/اعداد لاتین داخل یک ایزولهٔ چپ‌به‌راست قرار می‌گیرند تا زیر جهت
+  // راست‌به‌چپ صفحه ترتیب نمایش‌شان به‌هم نریزد (مثل «24 × 4 PzS 500»).
+  function ltr(s) {
+    return '<bdi dir="ltr">' + s + '</bdi>';
+  }
+
+  // ===================== اتصال به DOM =====================
+  var form = document.getElementById('sizing-form');
+  var resultsBody = document.getElementById('results-body');
+  var modeCustomer = document.getElementById('mode-customer');
+  var modeAuto = document.getElementById('mode-auto');
+  var fCapacity = document.getElementById('f-capacity');
+  var EMPTY_MSG = '<div class="results-empty">اطلاعات باکس، ولتاژ و ظرفیت را وارد و «محاسبه و سایزینگ» را بزنید تا باتری پیشنهادی و نمای بالا نمایش داده شود.</div>';
+
+  function updateCapacityFieldVisibility() {
+    fCapacity.style.display = modeCustomer.checked ? '' : 'none';
+  }
+  modeCustomer.addEventListener('change', updateCapacityFieldVisibility);
+  modeAuto.addEventListener('change', updateCapacityFieldVisibility);
+  updateCapacityFieldVisibility();
+
+  document.getElementById('btn-reset').addEventListener('click', function () {
+    form.reset();
+    updateCapacityFieldVisibility();
+    ['f-length', 'f-width', 'f-height', 'f-voltage', 'f-capacity'].forEach(function (id) {
+      document.getElementById(id).classList.remove('invalid');
+    });
+    resultsBody.innerHTML = EMPTY_MSG;
+  });
+
+  function setInvalid(fieldId, invalid) {
+    document.getElementById(fieldId).classList.toggle('invalid', invalid);
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var Lbox = parseFloat(document.getElementById('in-length').value);
+    var Wbox = parseFloat(document.getElementById('in-width').value);
+    var Hbox = parseFloat(document.getElementById('in-height').value);
+    var voltage = parseFloat(document.getElementById('in-voltage').value);
+    var mode = modeCustomer.checked ? 'customer' : 'auto';
+    var desiredCapacityRaw = document.getElementById('in-capacity').value;
+    var desiredCapacity = desiredCapacityRaw === '' ? null : parseFloat(desiredCapacityRaw);
+
+    var valid = true;
+    var lengthOk = Lbox > 0; setInvalid('f-length', !lengthOk); if (!lengthOk) valid = false;
+    var widthOk = Wbox > 0; setInvalid('f-width', !widthOk); if (!widthOk) valid = false;
+    var heightOk = Hbox > 0; setInvalid('f-height', !heightOk); if (!heightOk) valid = false;
+    var voltageOk = voltage > 0 && Math.abs(voltage / 2 - Math.round(voltage / 2)) < 1e-9;
+    setInvalid('f-voltage', !voltageOk); if (!voltageOk) valid = false;
+
+    if (mode === 'customer') {
+      var capOk = desiredCapacity !== null && desiredCapacity > 0;
+      setInvalid('f-capacity', !capOk); if (!capOk) valid = false;
+    } else {
+      setInvalid('f-capacity', false);
+    }
+
+    if (!valid) return;
+
+    var N = Math.round(voltage / 2);
+    var dinCandidates = buildCandidates('DIN', N, Lbox, Wbox, Hbox);
+    var bsCandidates = buildCandidates('BS', N, Lbox, Wbox, Hbox);
+    var allCandidates = dinCandidates.concat(bsCandidates);
+
+    var chosen, fallbackUsed = false, dinOption, bsOption, comparisonMode;
+
+    if (mode === 'customer') {
+      dinOption = bestOf(dinCandidates.filter(function (c) { return c.capacity === desiredCapacity; }));
+      bsOption = bestOf(bsCandidates.filter(function (c) { return c.capacity === desiredCapacity; }));
+      comparisonMode = 'exact';
+      if (dinOption || bsOption) {
+        chosen = bestOf([dinOption, bsOption].filter(Boolean));
+      } else {
+        fallbackUsed = true;
+        comparisonMode = 'max';
+        dinOption = bestOf(dinCandidates);
+        bsOption = bestOf(bsCandidates);
+        chosen = bestOf(allCandidates);
+      }
+    } else {
+      comparisonMode = 'max';
+      dinOption = bestOf(dinCandidates);
+      bsOption = bestOf(bsCandidates);
+      chosen = bestOf(allCandidates);
+    }
+
+    renderResults({
+      N: N, voltage: voltage, Lbox: Lbox, Wbox: Wbox, Hbox: Hbox,
+      chosen: chosen, fallbackUsed: fallbackUsed, dinOption: dinOption, bsOption: bsOption,
+      comparisonMode: comparisonMode, desiredCapacity: desiredCapacity
+    });
+  });
+
+  function statItem(k, v) {
+    return '<div class="stat"><div class="k">' + k + '</div><div class="v">' + ltr(v) + '</div></div>';
+  }
+
+  function comparisonRow(label, cand, chosen, mode) {
+    if (!cand) {
+      var msg = mode === 'exact'
+        ? 'با ظرفیت درخواستی، گزینه‌ای در این استاندارد جا نمی‌شود'
+        : 'هیچ باتری‌ای از این استاندارد در این ابعاد جا نمی‌شود';
+      return '<tr><td>' + label + '</td><td colspan="5" style="color:#8a1f24;">' + msg + '</td></tr>';
+    }
+    var isChosen = cand === chosen;
+    var dims = Math.round(cand.lengthUsed) + ' × ' + Math.round(cand.widthUsed) + ' × ' + cand.TH;
+    return '<tr class="' + (isChosen ? 'chosen' : '') + '">' +
+      '<td>' + label + '</td>' +
+      '<td>' + ltr(cellLabel(cand)) + '</td>' +
+      '<td>' + ltr(cand.capacity) + '</td>' +
+      '<td>' + ltr(cand.rowsNeeded) + '</td>' +
+      '<td>' + ltr(dims) + '</td>' +
+      '<td>' + (isChosen ? 'پیشنهاد نهایی' : 'جا می‌شود') + '</td>' +
+      '</tr>';
+  }
+
+  function renderResults(ctx) {
+    var N = ctx.N, voltage = ctx.voltage, Lbox = ctx.Lbox, Wbox = ctx.Wbox, Hbox = ctx.Hbox,
+      chosen = ctx.chosen, fallbackUsed = ctx.fallbackUsed, dinOption = ctx.dinOption, bsOption = ctx.bsOption,
+      comparisonMode = ctx.comparisonMode, desiredCapacity = ctx.desiredCapacity;
+
+    if (!chosen) {
+      resultsBody.innerHTML =
+        '<div class="banner error">با ابعاد و ولتاژ وارد‌شده (' + voltage + ' ولت → ' + N + ' سلول ۲ ولتی)، هیچ باتری‌ای از جدول موجود (DIN یا BS) در این باکس جا نمی‌شود. ابعاد بزرگ‌تر یا ولتاژ کمتر را بررسی کنید.</div>';
+      return;
+    }
+
+    var html = '';
+
+    if (fallbackUsed) {
+      html += '<div class="banner warn">ظرفیت درخواستی مشتری (' + desiredCapacity + ' آمپرساعت) در این ابعاد جا نمی‌شود یا در جدول موجود یافت نشد؛ به‌جای آن بیشترین ظرفیت ممکن در این ابعاد پیشنهاد شده است.</div>';
+    }
+
+    var slackL = Math.round((Lbox - chosen.lengthUsed) * 10) / 10;
+    var slackW = Math.round((Wbox - chosen.widthUsed) * 10) / 10;
+    var slackH = Math.round((Hbox - chosen.TH) * 10) / 10;
+
+    html += '<div class="rec-title">' + ltr(N + ' × ' + cellLabel(chosen)) + '</div>';
+    html += '<div class="rec-sub">استاندارد ' + chosen.standardLabel +
+      (chosen.groupNote ? ' — ' + chosen.groupNote : '') +
+      (comparisonMode === 'exact' && !fallbackUsed ? ' — بر اساس ظرفیت درخواستی مشتری' : ' — بیشترین ظرفیت ممکن در این ابعاد') +
+      '</div>';
+
+    html += '<div class="stat-grid">';
+    html += statItem('ولتاژ نهایی', voltage + ' ولت');
+    html += statItem('ظرفیت نهایی (C5)', chosen.capacity + ' آمپرساعت');
+    html += statItem('تعداد پلیت هر سلول', chosen.plates + ' پلیت');
+    html += statItem('تعداد ردیف چیدمان', chosen.rowsNeeded + ' ردیف');
+    html += statItem('ابعاد اشغال‌شده (ط×ع×ا)', Math.round(chosen.lengthUsed) + ' × ' + Math.round(chosen.widthUsed) + ' × ' + chosen.TH + ' mm');
+    html += statItem('فضای باقی‌مانده (ط/ع/ا)', slackL + ' / ' + slackW + ' / ' + slackH + ' mm');
+    html += statItem('وزن تقریبی باتری', chosen.totalWeight + ' kg');
+    html += statItem('حجم الکترولیت هر سلول', chosen.unitElectrolyte + ' kg');
+    html += '</div>';
+
+    html += '<h3 class="sec-title">مقایسه استاندارد DIN و BS</h3>';
+    html += '<p class="sec-caption">' + (comparisonMode === 'exact'
+      ? 'بهترین گزینهٔ هر استاندارد با ظرفیت درخواستی مشتری (' + desiredCapacity + ' آمپرساعت):'
+      : 'بیشترین ظرفیت ممکن در هر استاندارد:') + '</p>';
+    html += '<table><thead><tr><th>استاندارد</th><th>سلول برگزیده</th><th>ظرفیت (Ah)</th><th>تعداد ردیف</th><th>ابعاد اشغال‌شده (mm)</th><th>وضعیت</th></tr></thead><tbody>';
+    html += comparisonRow('DIN (198mm)', dinOption, chosen, comparisonMode);
+    html += comparisonRow('BS (158mm)', bsOption, chosen, comparisonMode);
+    html += '</tbody></table>';
+
+    html += '<h3 class="sec-title">نمای از بالا</h3>';
+    html += '<p class="sec-caption">خط پایین نمودار = طول باکس | خط کنار = عرض باکس</p>';
+    html += '<div class="viz-wrap" id="viz-container"></div>';
+
+    html += '<details><summary>راهنما و فرضیات محاسبه</summary><ul>' +
+      '<li>ارتفاع بر اساس TH (ارتفاع کل سلول به‌همراه ترمینال) با ارتفاع مجاز باکس مقایسه می‌شود.</li>' +
+      '<li>در صورتی‌که همه سلول‌ها در یک ردیف جا نشوند، چیدمان به‌صورت چندردیفه (سلول‌ها در چند ردیف کنار هم) نیز بررسی می‌شود.</li>' +
+      '<li>ظرفیت نهایی باتری برابر ظرفیت هر سلول است؛ چون سلول‌ها سری هستند، فقط ولتاژها جمع می‌شوند نه آمپرساعت‌ها.</li>' +
+      '<li>داده جدول استاندارد BS تنها تا ۵ پلیت (سه گروه ظرفیتی ۵۵، ۶۵ و ۷۵ آمپرساعت) در منبع ورودی موجود بود؛ ردیف‌های ۶ تا ۱۰ پلیت برای BS در این نسخه پشتیبانی نمی‌شود.</li>' +
+      '<li>مقادیر علامت‌دار با «*» (طول سلول‌های ۵، ۹ و ۱۰ پلیت در گروه ۱۴۰ آمپرساعت (جدید) استاندارد DIN) در عکس اصلی با ردیف مجاور یکسان خوانده شدند که از نظر فیزیکی بعید است؛ این مقادیر بر اساس روند طول در سایر گروه‌ها تخمین زده شدند و بهتر است پیش از استفاده عملیاتی با کاتالوگ اصلی تطبیق داده شوند.</li>' +
+      '</ul></details>';
+
+    resultsBody.innerHTML = html;
+    drawTopView(document.getElementById('viz-container'), chosen, Lbox, Wbox);
+  }
+
+  function drawTopView(container, chosen, Lbox, Wbox) {
+    var svgW = 700, svgH = 460;
+    var padL = 70, padT = 30, padR = 30, padB = 70;
+    var drawW = svgW - padL - padR, drawH = svgH - padT - padB;
+    var scale = Math.min(drawW / Lbox, drawH / Wbox);
+    var boxPxW = Lbox * scale, boxPxH = Wbox * scale;
+    var offX = padL + (drawW - boxPxW) / 2;
+    var offY = padT + (drawH - boxPxH) / 2;
+
+    var cells = '';
+    var N = chosen.N, cellsPerRow = chosen.cellsPerRow, rowsNeeded = chosen.rowsNeeded;
+    var cellLen = chosen.cellLength, cellWidthStd = chosen.cellWidthStd;
+
+    for (var i = 0; i < rowsNeeded; i++) {
+      var countInRow = (i < rowsNeeded - 1) ? cellsPerRow : (N - cellsPerRow * (rowsNeeded - 1));
+      for (var j = 0; j < countInRow; j++) {
+        var x, y, w, h;
+        if (chosen.rowDir === 'L') {
+          w = cellLen * scale; h = cellWidthStd * scale;
+          x = offX + j * w; y = offY + i * h;
+        } else {
+          w = cellWidthStd * scale; h = cellLen * scale;
+          x = offX + i * w; y = offY + j * h;
+        }
+        var gap = Math.min(1.5, w * 0.05, h * 0.05);
+        cells += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + Math.max(0.5, w - gap).toFixed(1) +
+          '" height="' + Math.max(0.5, h - gap).toFixed(1) + '" fill="#bfe3ee" stroke="#1d6f8c" stroke-width="1"></rect>';
+      }
+    }
+
+    var rotX = (offX - 30).toFixed(1), rotY = (offY + boxPxH / 2).toFixed(1);
+    var svg =
+      '<svg width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" style="max-width:100%;height:auto;direction:ltr;">' +
+      '<rect x="' + offX.toFixed(1) + '" y="' + offY.toFixed(1) + '" width="' + boxPxW.toFixed(1) + '" height="' + boxPxH.toFixed(1) +
+      '" fill="#f8fafc" stroke="#334155" stroke-width="2" stroke-dasharray="6 4"></rect>' +
+      cells +
+      '<line x1="' + offX.toFixed(1) + '" y1="' + (offY + boxPxH + 20).toFixed(1) + '" x2="' + (offX + boxPxW).toFixed(1) + '" y2="' + (offY + boxPxH + 20).toFixed(1) + '" stroke="#334155" stroke-width="1"></line>' +
+      '<text x="' + (offX + boxPxW / 2).toFixed(1) + '" y="' + (offY + boxPxH + 40).toFixed(1) + '" text-anchor="middle" font-size="13" fill="#334155">' + Math.round(Lbox) + ' mm</text>' +
+      '<line x1="' + (offX - 20).toFixed(1) + '" y1="' + offY.toFixed(1) + '" x2="' + (offX - 20).toFixed(1) + '" y2="' + (offY + boxPxH).toFixed(1) + '" stroke="#334155" stroke-width="1"></line>' +
+      '<text x="' + rotX + '" y="' + rotY + '" text-anchor="middle" font-size="13" fill="#334155" transform="rotate(-90 ' + rotX + ' ' + rotY + ')">' + Math.round(Wbox) + ' mm</text>' +
+      '<text x="' + (svgW / 2) + '" y="18" text-anchor="middle" font-size="13" fill="#14536a" font-weight="bold">' + N + ' × ' + cellLabel(chosen) + ' (' + chosen.standard + ')</text>' +
+      '</svg>';
+
+    container.innerHTML = svg;
+  }
+
+})();
+</script>
+</body>
+</html>
