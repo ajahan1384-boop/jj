@@ -129,27 +129,34 @@
 
   /* ---- proposal sheet (print only) ---- */
   .proposal-sheet{ display:none; }
-  .prop-header{ display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid var(--brand-700); padding-bottom:12px; margin-bottom:20px; }
+  .prop-header{
+    display:flex; justify-content:space-between; align-items:center; gap:16px;
+    padding:16px 20px; margin-bottom:22px; border-radius:12px; color:#fff;
+    background:linear-gradient(120deg,var(--brand-800),var(--brand-600) 60%,var(--accent-600));
+  }
   .prop-brand{ display:flex; align-items:center; gap:12px; }
-  .prop-header h1{ font-size:1.4rem; color:var(--brand-900); }
-  .prop-header .date{ font-size:.85rem; color:#555; }
+  .prop-header h1{ font-size:1.3rem; color:#fff; }
+  .prop-header .date{ font-size:.85rem; color:#eafff2; white-space:nowrap; }
   .prop-section{ margin-bottom:18px; }
-  .prop-section h3{ font-size:1rem; color:var(--brand-800); border-bottom:1px solid #ddd; padding-bottom:6px; margin-bottom:10px; }
+  .prop-section h3{ font-size:1rem; color:var(--brand-800); border-bottom:2px solid var(--brand-100); padding-bottom:6px; margin-bottom:10px; }
   .prop-views{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .prop-view-card{ border:1px solid #ddd; border-radius:10px; padding:10px; break-inside:avoid; }
-  .prop-view-title{ font-size:.8rem; font-weight:600; color:var(--brand-800); text-align:center; margin-bottom:4px; }
+  .prop-view-card{ border:1.5px solid var(--brand-100); border-radius:10px; padding:10px; break-inside:avoid; background:#fbfdfc; }
+  .prop-view-title{
+    font-size:.8rem; font-weight:700; color:#fff; text-align:center;
+    margin:-10px -10px 8px; padding:7px; border-radius:8px 8px 0 0; background:var(--brand-600);
+  }
   .prop-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px 24px; font-size:.9rem; }
   .prop-grid .lbl{ color:#555; }
-  .prop-highlight{ background:var(--brand-50); border:1.5px solid var(--brand-100); border-radius:12px; padding:16px 18px; }
+  .prop-highlight{ background:linear-gradient(120deg,var(--brand-50),var(--accent-100)); border:1.5px solid var(--brand-100); border-radius:12px; padding:16px 18px; }
   .prop-highlight .model{ font-size:1.3rem; font-weight:700; color:var(--brand-900); }
   .prop-footer{ margin-top:26px; padding-top:14px; border-top:1px solid #ddd; font-size:.76rem; color:#666; }
 
   @media print{
-    body{ background:#fff; }
+    html, body{ background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact; }
     .app-shell{ display:none !important; }
     .proposal-sheet{ display:block !important; }
-    .proposal-sheet, .proposal-sheet *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    @page{ margin:16mm; }
+    .proposal-sheet, .proposal-sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
+    @page{ margin:14mm; }
   }
 </style>
 </head>
@@ -196,22 +203,6 @@
         <div class="hint">باید مضربی از ۲ باشد (هر سلول ۲ ولت است).</div>
         <div class="error-text">ولتاژ باید عددی مثبت و مضربی از ۲ باشد.</div>
       </div>
-
-      <fieldset>
-        <legend>استاندارد باتری</legend>
-        <div class="radio-row">
-          <input type="radio" name="std-choice" id="std-auto" value="auto" checked>
-          <label for="std-auto">خودکار (بهترین گزینه بین DIN و BS)</label>
-        </div>
-        <div class="radio-row">
-          <input type="radio" name="std-choice" id="std-din" value="DIN">
-          <label for="std-din">فقط DIN (عرض سلول ۱۹۸ میلی‌متر)</label>
-        </div>
-        <div class="radio-row">
-          <input type="radio" name="std-choice" id="std-bs" value="BS">
-          <label for="std-bs">فقط BS (عرض سلول ۱۵۸ میلی‌متر)</label>
-        </div>
-      </fieldset>
 
       <fieldset>
         <legend>حالت تعیین ظرفیت</legend>
@@ -709,7 +700,6 @@
     var Hbox = parseFloat(document.getElementById('in-height').value);
     var voltage = parseFloat(document.getElementById('in-voltage').value);
     var mode = modeCustomer.checked ? 'customer' : 'auto';
-    var standardChoice = document.querySelector('input[name="std-choice"]:checked').value;
     var desiredCapacityRaw = document.getElementById('in-capacity').value;
     var desiredCapacity = desiredCapacityRaw === '' ? null : parseFloat(desiredCapacityRaw);
 
@@ -730,8 +720,8 @@
     if (!valid) return;
 
     var N = Math.round(voltage / 2);
-    var dinCandidates = standardChoice === 'BS' ? [] : buildCandidates('DIN', N, Lbox, Wbox, Hbox);
-    var bsCandidates = standardChoice === 'DIN' ? [] : buildCandidates('BS', N, Lbox, Wbox, Hbox);
+    var dinCandidates = buildCandidates('DIN', N, Lbox, Wbox, Hbox);
+    var bsCandidates = buildCandidates('BS', N, Lbox, Wbox, Hbox);
     var allCandidates = dinCandidates.concat(bsCandidates);
 
     var chosen, fallbackUsed = false, dinOption, bsOption, comparisonMode;
@@ -757,7 +747,7 @@
     }
 
     renderResults({
-      N: N, voltage: voltage, Lbox: Lbox, Wbox: Wbox, Hbox: Hbox, mode: mode, standardChoice: standardChoice,
+      N: N, voltage: voltage, Lbox: Lbox, Wbox: Wbox, Hbox: Hbox, mode: mode,
       chosen: chosen, fallbackUsed: fallbackUsed, dinOption: dinOption, bsOption: bsOption,
       comparisonMode: comparisonMode, desiredCapacity: desiredCapacity
     });
@@ -767,31 +757,29 @@
     return '<div class="stat"><div class="k">' + k + '</div><div class="v">' + ltr(v) + '</div></div>';
   }
 
-  function comparisonRow(label, cand, chosen, mode, excluded) {
+  function comparisonRow(label, cand, chosen, mode, standardKey) {
     if (!cand) {
-      var msg = excluded
-        ? 'این استاندارد توسط شما انتخاب نشده است'
-        : (mode === 'exact'
-          ? 'با ظرفیت درخواستی، گزینه‌ای در این استاندارد جا نمی‌شود'
-          : 'هیچ باتری‌ای از این استاندارد در این ابعاد جا نمی‌شود');
-      return '<tr><td>' + label + '</td><td colspan="5" style="color:#8a1f24;">' + msg + '</td></tr>';
+      var msg = mode === 'exact'
+        ? 'با ظرفیت درخواستی، گزینه‌ای در این استاندارد جا نمی‌شود'
+        : 'هیچ باتری‌ای از این استاندارد در این ابعاد جا نمی‌شود';
+      return '<tr><td colspan="6" style="color:#8a1f24;">' + label + ': ' + msg + '</td></tr>';
     }
     var isChosen = cand === chosen;
     var dims = Math.round(cand.lengthUsed) + ' × ' + Math.round(cand.widthUsed) + ' × ' + cand.TH;
     return '<tr class="' + (isChosen ? 'chosen' : '') + '">' +
+      '<td><input type="radio" name="table-std-switch" class="std-switch-radio" data-standard="' + standardKey + '"' + (isChosen ? ' checked' : '') + '></td>' +
       '<td>' + label + '</td>' +
       '<td>' + ltr(cellLabel(cand)) + '</td>' +
       '<td>' + ltr(cand.capacity) + '</td>' +
       '<td>' + ltr(cand.rowsNeeded) + '</td>' +
       '<td>' + ltr(dims) + '</td>' +
-      '<td>' + (isChosen ? 'پیشنهاد نهایی' : 'جا می‌شود') + '</td>' +
       '</tr>';
   }
 
   function renderResults(ctx) {
     var N = ctx.N, voltage = ctx.voltage, Lbox = ctx.Lbox, Wbox = ctx.Wbox, Hbox = ctx.Hbox,
       chosen = ctx.chosen, fallbackUsed = ctx.fallbackUsed, dinOption = ctx.dinOption, bsOption = ctx.bsOption,
-      comparisonMode = ctx.comparisonMode, desiredCapacity = ctx.desiredCapacity, standardChoice = ctx.standardChoice;
+      comparisonMode = ctx.comparisonMode, desiredCapacity = ctx.desiredCapacity, manualPick = ctx.manualPick;
 
     lastResultCtx = ctx;
 
@@ -815,8 +803,8 @@
     html += '<div class="rec-title">' + ltr(N + ' × ' + cellLabel(chosen)) + '</div>';
     html += '<div class="rec-sub">استاندارد ' + chosen.standardLabel +
       (chosen.groupNote ? ' — ' + chosen.groupNote : '') +
-      (comparisonMode === 'exact' && !fallbackUsed ? ' — بر اساس ظرفیت درخواستی مشتری' : ' — بیشترین ظرفیت ممکن در این ابعاد') +
-      (standardChoice !== 'auto' ? ' — استاندارد به‌صورت دستی روی ' + standardChoice + ' محدود شده' : '') +
+      (manualPick ? ' — انتخاب دستی شما از جدول مقایسه' :
+        (comparisonMode === 'exact' && !fallbackUsed ? ' — بر اساس ظرفیت درخواستی مشتری' : ' — بیشترین ظرفیت ممکن در این ابعاد')) +
       '</div>';
 
     html += '<div class="stat-grid">';
@@ -833,10 +821,10 @@
     html += '<h3 class="sec-title">مقایسه استاندارد DIN و BS</h3>';
     html += '<p class="sec-caption">' + (comparisonMode === 'exact'
       ? 'بهترین گزینهٔ هر استاندارد با ظرفیت درخواستی مشتری (' + desiredCapacity + ' آمپرساعت):'
-      : 'بیشترین ظرفیت ممکن در هر استاندارد:') + '</p>';
-    html += '<table><thead><tr><th>استاندارد</th><th>سلول برگزیده</th><th>ظرفیت (Ah)</th><th>تعداد ردیف</th><th>ابعاد اشغال‌شده (mm)</th><th>وضعیت</th></tr></thead><tbody>';
-    html += comparisonRow('DIN (198mm)', dinOption, chosen, comparisonMode, standardChoice === 'BS');
-    html += comparisonRow('BS (158mm)', bsOption, chosen, comparisonMode, standardChoice === 'DIN');
+      : 'بیشترین ظرفیت ممکن در هر استاندارد:') + ' برای سوییچ بین دو استاندارد، دکمهٔ ستون «انتخاب» را بزنید.</p>';
+    html += '<table><thead><tr><th>انتخاب</th><th>استاندارد</th><th>سلول برگزیده</th><th>ظرفیت (Ah)</th><th>تعداد ردیف</th><th>ابعاد اشغال‌شده (mm)</th></tr></thead><tbody>';
+    html += comparisonRow('DIN (198mm)', dinOption, chosen, comparisonMode, 'DIN');
+    html += comparisonRow('BS (158mm)', bsOption, chosen, comparisonMode, 'BS');
     html += '</tbody></table>';
 
     html += '<h3 class="sec-title">چهار‌نمای فنی</h3>';
@@ -876,6 +864,23 @@
     document.getElementById('btn-print-proposal').addEventListener('click', function () {
       preparePrintProposal(lastResultCtx);
     });
+
+    resultsBody.querySelectorAll('.std-switch-radio').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        var picked = radio.getAttribute('data-standard') === 'DIN' ? dinOption : bsOption;
+        if (!picked) return;
+        var newCtx = shallowCopy(ctx);
+        newCtx.chosen = picked;
+        newCtx.manualPick = true;
+        renderResults(newCtx);
+      });
+    });
+  }
+
+  function shallowCopy(obj) {
+    var out = {};
+    for (var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k]; }
+    return out;
   }
 
   // ===================== خروجی پیشنهاد برای مشتری (چاپ / PDF) =====================
