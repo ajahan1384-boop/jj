@@ -30,9 +30,9 @@
     --ink-900:#0f172a; --ink-700:#334155; --ink-600:#475569; --ink-400:#94a3b8;
     --line-200:#e2e8f0; --line-100:#eef1f6;
     --surface:#ffffff; --bg:#eef2f7;
-    --brand-900:#0c4a6e; --brand-800:#075985; --brand-700:#0369a1; --brand-600:#0284c7; --brand-500:#0ea5e9;
-    --brand-100:#e0f2fe; --brand-50:#f0f9ff;
-    --accent-600:#b45309; --accent-100:#fef3c7;
+    --brand-900:#0b4023; --brand-800:#0f5c31; --brand-700:#14803e; --brand-600:#18a24a; --brand-500:#2fb85e;
+    --brand-100:#dcfce7; --brand-50:#f0fdf4;
+    --accent-700:#c2620f; --accent-600:#f2841e; --accent-100:#fdead0;
     --success-700:#15803d; --success-600:#16a34a; --success-50:#f0fdf4; --success-100:#dcfce7; --success-200:#bbf7d0;
     --danger-700:#b91c1c; --danger-600:#dc2626; --danger-50:#fef2f2; --danger-200:#fecaca;
     --warn-700:#92400e; --warn-50:#fffbeb; --warn-200:#fde68a;
@@ -53,7 +53,7 @@
   }
   .app-header .title-row{ display:flex; align-items:center; gap:12px; max-width:1320px; margin:0 auto; }
   .app-header h1{ font-size:1.35rem; }
-  .app-header p{ margin:6px 0 0; font-size:.85rem; color:#bae6fd; max-width:1320px; margin-inline:auto; }
+  .app-header p{ margin:6px 0 0; font-size:.85rem; color:#bbf7d0; max-width:1320px; margin-inline:auto; }
   .app-header .icon{ flex:none; width:38px; height:38px; }
 
   main{ max-width:1320px; margin:0 auto; padding:24px 20px 48px; display:grid; grid-template-columns:380px 1fr; gap:22px; align-items:start; }
@@ -87,15 +87,15 @@
   .btn-primary:active{ transform:translateY(1px); }
   .btn-secondary{ width:100%; margin-top:10px; background:#fff; color:var(--ink-600); border:1.5px solid var(--line-200); }
   .btn-secondary:hover{ background:var(--bg); }
-  .btn-print{ width:100%; margin-top:18px; background:var(--success-600); color:#fff; box-shadow:var(--shadow-sm); }
-  .btn-print:hover{ background:var(--success-700); }
+  .btn-print{ width:100%; margin-top:18px; background:var(--accent-600); color:#fff; box-shadow:var(--shadow-sm); }
+  .btn-print:hover{ background:var(--accent-700); }
 
   .results-empty{ color:var(--ink-400); font-size:.9rem; padding:36px 10px; text-align:center; }
   .banner{ padding:13px 16px; border-radius:var(--radius-md); font-size:.85rem; margin-bottom:16px; border:1.5px solid; }
   .banner.warn{ background:var(--warn-50); border-color:var(--warn-200); color:var(--warn-700); }
   .banner.error{ background:var(--danger-50); border-color:var(--danger-200); color:var(--danger-700); }
 
-  .rec-badge{ display:inline-block; font-size:.7rem; font-weight:700; background:var(--success-100); color:var(--success-700); padding:3px 10px; border-radius:999px; margin-bottom:10px; }
+  .rec-badge{ display:inline-block; font-size:.7rem; font-weight:700; background:var(--accent-100); color:var(--accent-700); padding:3px 10px; border-radius:999px; margin-bottom:10px; }
   .rec-title{ font-size:1.35rem; font-weight:700; color:var(--brand-900); margin-bottom:4px; }
   .rec-sub{ color:var(--ink-600); font-size:.85rem; margin-bottom:18px; }
 
@@ -130,10 +130,14 @@
   /* ---- proposal sheet (print only) ---- */
   .proposal-sheet{ display:none; }
   .prop-header{ display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid var(--brand-700); padding-bottom:12px; margin-bottom:20px; }
-  .prop-header h1{ font-size:1.5rem; color:var(--brand-900); }
+  .prop-brand{ display:flex; align-items:center; gap:12px; }
+  .prop-header h1{ font-size:1.4rem; color:var(--brand-900); }
   .prop-header .date{ font-size:.85rem; color:#555; }
   .prop-section{ margin-bottom:18px; }
   .prop-section h3{ font-size:1rem; color:var(--brand-800); border-bottom:1px solid #ddd; padding-bottom:6px; margin-bottom:10px; }
+  .prop-views{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .prop-view-card{ border:1px solid #ddd; border-radius:10px; padding:10px; break-inside:avoid; }
+  .prop-view-title{ font-size:.8rem; font-weight:600; color:var(--brand-800); text-align:center; margin-bottom:4px; }
   .prop-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px 24px; font-size:.9rem; }
   .prop-grid .lbl{ color:#555; }
   .prop-highlight{ background:var(--brand-50); border:1.5px solid var(--brand-100); border-radius:12px; padding:16px 18px; }
@@ -154,13 +158,11 @@
 <header class="app-header">
   <div class="title-row">
     <svg class="icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="6" y="14" width="10" height="5" rx="1.5" fill="#bae6fd"/>
-      <rect x="32" y="14" width="10" height="5" rx="1.5" fill="#bae6fd"/>
-      <circle x="0" cy="0" r="1.6" fill="#0c4a6e"/>
-      <rect x="4" y="18" width="40" height="24" rx="3" fill="#e0f2fe" stroke="#bae6fd" stroke-width="1.5"/>
-      <circle cx="16" cy="30" r="3.4" fill="#7dd3fc" stroke="#0369a1" stroke-width="1.2"/>
-      <circle cx="32" cy="30" r="3.4" fill="#7dd3fc" stroke="#0369a1" stroke-width="1.2"/>
-      <circle cx="24" cy="22.5" r="2" fill="#0369a1"/>
+      <circle cx="16" cy="24" r="13" fill="#18a24a"/>
+      <circle cx="32" cy="24" r="13" fill="#f2841e"/>
+      <rect x="9" y="21.5" width="12" height="5" rx="2.5" fill="#fff"/>
+      <rect x="30" y="21.5" width="12" height="5" rx="2.5" fill="#fff"/>
+      <rect x="33.5" y="18" width="5" height="12" rx="2.5" fill="#fff"/>
     </svg>
     <div>
       <h1>ابزار سایزینگ باتری لیفتراک</h1>
@@ -194,6 +196,22 @@
         <div class="hint">باید مضربی از ۲ باشد (هر سلول ۲ ولت است).</div>
         <div class="error-text">ولتاژ باید عددی مثبت و مضربی از ۲ باشد.</div>
       </div>
+
+      <fieldset>
+        <legend>استاندارد باتری</legend>
+        <div class="radio-row">
+          <input type="radio" name="std-choice" id="std-auto" value="auto" checked>
+          <label for="std-auto">خودکار (بهترین گزینه بین DIN و BS)</label>
+        </div>
+        <div class="radio-row">
+          <input type="radio" name="std-choice" id="std-din" value="DIN">
+          <label for="std-din">فقط DIN (عرض سلول ۱۹۸ میلی‌متر)</label>
+        </div>
+        <div class="radio-row">
+          <input type="radio" name="std-choice" id="std-bs" value="BS">
+          <label for="std-bs">فقط BS (عرض سلول ۱۵۸ میلی‌متر)</label>
+        </div>
+      </fieldset>
 
       <fieldset>
         <legend>حالت تعیین ظرفیت</legend>
@@ -434,9 +452,15 @@
   }
 
   // ===================== گرافیک باتری (SVG) =====================
-  var CELL_BODY_FILL = '#cfe7f2', CELL_BODY_STROKE = '#0f6f8c';
-  var TERMINAL_FILL = '#78838f', TERMINAL_STROKE = '#3b4652';
-  var VENT_FILL = '#3f3f46', VENT_STROKE = '#18181b';
+  // رنگ‌های واقع‌گرایانه سلول: بدنه تیره (پلاستیک) + قطب‌های زرد/برنجی، مطابق ظاهر واقعی باتری‌های تراکشن.
+  var CELL_BODY_FILL = '#2b2f36', CELL_BODY_STROKE = '#14171b';
+  var TERMINAL_FILL = '#f2c230', TERMINAL_STROKE = '#8a6008';
+  var VENT_FILL = '#0b0d10', VENT_STROKE = '#000000';
+
+  var BRAND_MARK_SVG = '<svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex:none;">' +
+    '<circle cx="16" cy="24" r="13" fill="#18a24a"/><circle cx="32" cy="24" r="13" fill="#f2841e"/>' +
+    '<rect x="9" y="21.5" width="12" height="5" rx="2.5" fill="#fff"/><rect x="30" y="21.5" width="12" height="5" rx="2.5" fill="#fff"/>' +
+    '<rect x="33.5" y="18" width="5" height="12" rx="2.5" fill="#fff"/></svg>';
 
   function svgRect(x, y, w, h, rx, fill, stroke, sw) {
     return '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + Math.max(0.5, w).toFixed(1) +
@@ -519,7 +543,7 @@
       '<text x="' + (offX + boxPxW / 2).toFixed(1) + '" y="' + (offY + boxPxH + 36).toFixed(1) + '" text-anchor="middle" font-size="13" fill="#334155">' + Math.round(Lbox) + ' mm</text>' +
       '<line x1="' + (offX - 22).toFixed(1) + '" y1="' + offY.toFixed(1) + '" x2="' + (offX - 22).toFixed(1) + '" y2="' + (offY + boxPxH).toFixed(1) + '" stroke="#94a3b8" stroke-width="1"/>' +
       '<text x="' + rotX + '" y="' + rotY + '" text-anchor="middle" font-size="13" fill="#334155" transform="rotate(-90 ' + rotX + ' ' + rotY + ')">' + Math.round(Wbox) + ' mm</text>' +
-      '<text x="' + (svgW / 2) + '" y="18" text-anchor="middle" font-size="13" fill="#0c4a6e" font-weight="700">' + N + ' × ' + cellLabel(chosen) + ' (' + chosen.standard + ')</text>' +
+      '<text x="' + (svgW / 2) + '" y="18" text-anchor="middle" font-size="13" fill="#0f5c31" font-weight="700">' + N + ' × ' + cellLabel(chosen) + ' (' + chosen.standard + ')</text>' +
       '</svg>';
 
     container.innerHTML = svg;
@@ -562,6 +586,75 @@
     container.innerHTML = svg;
   }
 
+  // نمای ایزومتریک: باکس باتری (سه وجه سایه‌دار) + گرید سلول‌ها روی وجه بالا با قطب/سوراخ ساده‌شده
+  function drawIsoView(container, chosen) {
+    var svgW = 640, svgH = 440;
+    var L = chosen.lengthUsed, W = chosen.widthUsed, H = chosen.TH;
+    var cos30 = Math.cos(Math.PI / 6), sin30 = Math.sin(Math.PI / 6);
+
+    function isoRaw(x, y, z) { return [(x - y) * cos30, (x + y) * sin30 - z]; }
+
+    var corners = [
+      [0, 0, 0], [L, 0, 0], [L, W, 0], [0, W, 0],
+      [0, 0, H], [L, 0, H], [L, W, H], [0, W, H]
+    ].map(function (p) { return isoRaw(p[0], p[1], p[2]); });
+    var xs = corners.map(function (p) { return p[0]; }), ys = corners.map(function (p) { return p[1]; });
+    var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+    var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+
+    var padTop = 46, padSide = 40, padBottom = 30;
+    var scale = Math.min((svgW - padSide * 2) / (maxX - minX), (svgH - padTop - padBottom) / (maxY - minY));
+
+    function proj(x, y, z) {
+      var p = isoRaw(x, y, z);
+      return [(p[0] - minX) * scale + (svgW - (maxX - minX) * scale) / 2, (p[1] - minY) * scale + padTop];
+    }
+    function pt(x, y, z) { var p = proj(x, y, z); return p[0].toFixed(1) + ',' + p[1].toFixed(1); }
+    function poly(points, fill, stroke) {
+      return '<polygon points="' + points.map(function (p) { return pt(p[0], p[1], p[2]); }).join(' ') + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1"/>';
+    }
+
+    var top = [[0, 0, H], [L, 0, H], [L, W, H], [0, W, H]];
+    var faceRight = [[L, 0, 0], [L, 0, H], [L, W, H], [L, W, 0]];
+    var faceFront = [[0, W, 0], [L, W, 0], [L, W, H], [0, W, H]];
+
+    var svg = '<svg width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" style="max-width:100%;height:auto;direction:ltr;">';
+    svg += poly(faceFront, '#8a94a3', '#5b6472');
+    svg += poly(faceRight, '#aab3c0', '#5b6472');
+    svg += poly(top, '#d3d9e0', '#5b6472');
+
+    var N = chosen.N, cellsPerRow = chosen.cellsPerRow, rowsNeeded = chosen.rowsNeeded;
+    var cellLen = chosen.cellLength, cellWidthStd = chosen.cellWidthStd, rowDir = chosen.rowDir;
+    var cellPxApprox = scale * Math.min(cellLen, cellWidthStd);
+    var showDetail = cellPxApprox > 6;
+
+    for (var i = 0; i < rowsNeeded; i++) {
+      var countInRow = (i < rowsNeeded - 1) ? cellsPerRow : (N - cellsPerRow * (rowsNeeded - 1));
+      for (var j = 0; j < countInRow; j++) {
+        var cx0, cy0, cw, ch;
+        if (rowDir === 'L') { cw = cellLen; ch = cellWidthStd; cx0 = j * cw; cy0 = i * ch; }
+        else { cw = cellWidthStd; ch = cellLen; cx0 = i * cw; cy0 = j * ch; }
+        var quad = [[cx0, cy0, H], [cx0 + cw, cy0, H], [cx0 + cw, cy0 + ch, H], [cx0, cy0 + ch, H]];
+        svg += '<polygon points="' + quad.map(function (p) { return pt(p[0], p[1], p[2]); }).join(' ') + '" fill="' + CELL_BODY_FILL + '" stroke="' + CELL_BODY_STROKE + '" stroke-width="0.6"/>';
+        if (showDetail) {
+          var my = cy0 + ch / 2;
+          var p1 = proj(cx0 + cw * 0.3, my, H), p2 = proj(cx0 + cw * 0.7, my, H);
+          var rTerm = Math.max(1, cellPxApprox * 0.13);
+          svg += '<circle cx="' + p1[0].toFixed(1) + '" cy="' + p1[1].toFixed(1) + '" r="' + rTerm.toFixed(1) + '" fill="' + TERMINAL_FILL + '" stroke="' + TERMINAL_STROKE + '" stroke-width="0.5"/>';
+          svg += '<circle cx="' + p2[0].toFixed(1) + '" cy="' + p2[1].toFixed(1) + '" r="' + rTerm.toFixed(1) + '" fill="' + TERMINAL_FILL + '" stroke="' + TERMINAL_STROKE + '" stroke-width="0.5"/>';
+          var pv = proj(cx0 + cw / 2, my, H);
+          svg += '<circle cx="' + pv[0].toFixed(1) + '" cy="' + pv[1].toFixed(1) + '" r="' + (rTerm * 0.5).toFixed(1) + '" fill="' + VENT_FILL + '"/>';
+        }
+      }
+    }
+
+    svg += '<text x="' + (svgW / 2).toFixed(1) + '" y="' + (svgH - 10).toFixed(1) + '" text-anchor="middle" font-size="11" fill="#475569">' + Math.round(L) + ' × ' + Math.round(W) + ' × ' + H + ' mm</text>';
+    svg += '<text x="' + (svgW / 2) + '" y="18" text-anchor="middle" font-size="13" fill="#0f5c31" font-weight="700">' + N + ' × ' + cellLabel(chosen) + ' (' + chosen.standard + ')</text>';
+    svg += '</svg>';
+
+    container.innerHTML = svg;
+  }
+
   function computeViewSegments(chosen) {
     var detailedCount = chosen.rowsNeeded === 1 ? chosen.N : chosen.cellsPerRow;
     var i, detailedSegs = [], blockSegs = [];
@@ -570,11 +663,12 @@
     return chosen.rowDir === 'L' ? { front: detailedSegs, side: blockSegs } : { front: blockSegs, side: detailedSegs };
   }
 
-  function renderThreeViews(topEl, frontEl, sideEl, chosen, Lbox, Wbox, Hbox) {
+  function renderFourViews(topEl, frontEl, sideEl, isoEl, chosen, Lbox, Wbox, Hbox) {
     drawTopView(topEl, chosen, Lbox, Wbox);
     var segs = computeViewSegments(chosen);
     drawElevation(frontEl, Lbox, Hbox, segs.front, chosen.TH);
     drawElevation(sideEl, Wbox, Hbox, segs.side, chosen.TH);
+    drawIsoView(isoEl, chosen);
   }
 
   // ===================== اتصال به DOM =====================
@@ -615,6 +709,7 @@
     var Hbox = parseFloat(document.getElementById('in-height').value);
     var voltage = parseFloat(document.getElementById('in-voltage').value);
     var mode = modeCustomer.checked ? 'customer' : 'auto';
+    var standardChoice = document.querySelector('input[name="std-choice"]:checked').value;
     var desiredCapacityRaw = document.getElementById('in-capacity').value;
     var desiredCapacity = desiredCapacityRaw === '' ? null : parseFloat(desiredCapacityRaw);
 
@@ -635,8 +730,8 @@
     if (!valid) return;
 
     var N = Math.round(voltage / 2);
-    var dinCandidates = buildCandidates('DIN', N, Lbox, Wbox, Hbox);
-    var bsCandidates = buildCandidates('BS', N, Lbox, Wbox, Hbox);
+    var dinCandidates = standardChoice === 'BS' ? [] : buildCandidates('DIN', N, Lbox, Wbox, Hbox);
+    var bsCandidates = standardChoice === 'DIN' ? [] : buildCandidates('BS', N, Lbox, Wbox, Hbox);
     var allCandidates = dinCandidates.concat(bsCandidates);
 
     var chosen, fallbackUsed = false, dinOption, bsOption, comparisonMode;
@@ -662,7 +757,7 @@
     }
 
     renderResults({
-      N: N, voltage: voltage, Lbox: Lbox, Wbox: Wbox, Hbox: Hbox, mode: mode,
+      N: N, voltage: voltage, Lbox: Lbox, Wbox: Wbox, Hbox: Hbox, mode: mode, standardChoice: standardChoice,
       chosen: chosen, fallbackUsed: fallbackUsed, dinOption: dinOption, bsOption: bsOption,
       comparisonMode: comparisonMode, desiredCapacity: desiredCapacity
     });
@@ -672,11 +767,13 @@
     return '<div class="stat"><div class="k">' + k + '</div><div class="v">' + ltr(v) + '</div></div>';
   }
 
-  function comparisonRow(label, cand, chosen, mode) {
+  function comparisonRow(label, cand, chosen, mode, excluded) {
     if (!cand) {
-      var msg = mode === 'exact'
-        ? 'با ظرفیت درخواستی، گزینه‌ای در این استاندارد جا نمی‌شود'
-        : 'هیچ باتری‌ای از این استاندارد در این ابعاد جا نمی‌شود';
+      var msg = excluded
+        ? 'این استاندارد توسط شما انتخاب نشده است'
+        : (mode === 'exact'
+          ? 'با ظرفیت درخواستی، گزینه‌ای در این استاندارد جا نمی‌شود'
+          : 'هیچ باتری‌ای از این استاندارد در این ابعاد جا نمی‌شود');
       return '<tr><td>' + label + '</td><td colspan="5" style="color:#8a1f24;">' + msg + '</td></tr>';
     }
     var isChosen = cand === chosen;
@@ -694,7 +791,7 @@
   function renderResults(ctx) {
     var N = ctx.N, voltage = ctx.voltage, Lbox = ctx.Lbox, Wbox = ctx.Wbox, Hbox = ctx.Hbox,
       chosen = ctx.chosen, fallbackUsed = ctx.fallbackUsed, dinOption = ctx.dinOption, bsOption = ctx.bsOption,
-      comparisonMode = ctx.comparisonMode, desiredCapacity = ctx.desiredCapacity;
+      comparisonMode = ctx.comparisonMode, desiredCapacity = ctx.desiredCapacity, standardChoice = ctx.standardChoice;
 
     lastResultCtx = ctx;
 
@@ -719,6 +816,7 @@
     html += '<div class="rec-sub">استاندارد ' + chosen.standardLabel +
       (chosen.groupNote ? ' — ' + chosen.groupNote : '') +
       (comparisonMode === 'exact' && !fallbackUsed ? ' — بر اساس ظرفیت درخواستی مشتری' : ' — بیشترین ظرفیت ممکن در این ابعاد') +
+      (standardChoice !== 'auto' ? ' — استاندارد به‌صورت دستی روی ' + standardChoice + ' محدود شده' : '') +
       '</div>';
 
     html += '<div class="stat-grid">';
@@ -737,14 +835,17 @@
       ? 'بهترین گزینهٔ هر استاندارد با ظرفیت درخواستی مشتری (' + desiredCapacity + ' آمپرساعت):'
       : 'بیشترین ظرفیت ممکن در هر استاندارد:') + '</p>';
     html += '<table><thead><tr><th>استاندارد</th><th>سلول برگزیده</th><th>ظرفیت (Ah)</th><th>تعداد ردیف</th><th>ابعاد اشغال‌شده (mm)</th><th>وضعیت</th></tr></thead><tbody>';
-    html += comparisonRow('DIN (198mm)', dinOption, chosen, comparisonMode);
-    html += comparisonRow('BS (158mm)', bsOption, chosen, comparisonMode);
+    html += comparisonRow('DIN (198mm)', dinOption, chosen, comparisonMode, standardChoice === 'BS');
+    html += comparisonRow('BS (158mm)', bsOption, chosen, comparisonMode, standardChoice === 'DIN');
     html += '</tbody></table>';
 
-    html += '<h3 class="sec-title">سه‌نمای فنی</h3>';
-    html += '<p class="sec-caption">نمای از بالا: چیدمان کامل سلول‌ها در باکس — نمای روبرو/جانبی: تعداد سلول (یا ردیف) × ارتفاع کل با ترمینال</p>';
+    html += '<h3 class="sec-title">چهار‌نمای فنی</h3>';
+    html += '<p class="sec-caption">نمای از بالا و ایزومتریک: چیدمان کامل سلول‌ها در باکس — نمای روبرو/جانبی: تعداد سلول (یا ردیف) × ارتفاع کل با ترمینال</p>';
     html += '<div class="views-grid">';
+    html += '<div class="view-row-2">';
     html += '<div class="view-card"><h4>نمای از بالا (Top View)</h4><div class="viz-wrap" id="viz-top"></div></div>';
+    html += '<div class="view-card"><h4>نمای ایزومتریک (Isometric View)</h4><div class="viz-wrap" id="viz-iso"></div></div>';
+    html += '</div>';
     html += '<div class="view-row-2">';
     html += '<div class="view-card"><h4>نمای روبرو (Front View)</h4><div class="viz-wrap" id="viz-front"></div></div>';
     html += '<div class="view-card"><h4>نمای جانبی (Side View)</h4><div class="viz-wrap" id="viz-side"></div></div>';
@@ -764,10 +865,11 @@
 
     resultsBody.innerHTML = html;
 
-    renderThreeViews(
+    renderFourViews(
       document.getElementById('viz-top'),
       document.getElementById('viz-front'),
       document.getElementById('viz-side'),
+      document.getElementById('viz-iso'),
       chosen, Lbox, Wbox, Hbox
     );
 
@@ -794,7 +896,7 @@
     var customerPhone = (document.getElementById('in-customer-phone').value || '').trim();
 
     var html = '';
-    html += '<div class="prop-header"><div><h1>پیشنهاد فنی انتخاب باتری لیفتراک</h1></div><div class="date">تاریخ: ' + ltr(formatTodayDate()) + '</div></div>';
+    html += '<div class="prop-header"><div class="prop-brand">' + BRAND_MARK_SVG + '<h1>پیشنهاد فنی انتخاب باتری لیفتراک</h1></div><div class="date">تاریخ: ' + ltr(formatTodayDate()) + '</div></div>';
 
     html += '<div class="prop-section"><h3>اطلاعات مشتری</h3><div class="prop-grid">' +
       '<div><span class="lbl">نام مشتری: </span>' + (customerName ? customerName : '..............................') + '</div>' +
@@ -818,12 +920,23 @@
       '<div><span class="lbl">وزن تقریبی باتری: </span>' + ltr(chosen.totalWeight + ' kg') + '</div>' +
       '</div></div></div>';
 
-    html += '<div class="prop-section"><h3>نمای از بالا</h3><div id="prop-viz"></div></div>';
+    html += '<div class="prop-section"><h3>نمای‌های فنی</h3><div class="prop-views">' +
+      '<div class="prop-view-card"><div class="prop-view-title">نمای از بالا</div><div id="prop-viz-top"></div></div>' +
+      '<div class="prop-view-card"><div class="prop-view-title">نمای ایزومتریک</div><div id="prop-viz-iso"></div></div>' +
+      '<div class="prop-view-card"><div class="prop-view-title">نمای روبرو</div><div id="prop-viz-front"></div></div>' +
+      '<div class="prop-view-card"><div class="prop-view-title">نمای جانبی</div><div id="prop-viz-side"></div></div>' +
+      '</div></div>';
 
     html += '<div class="prop-footer">این پیشنهاد بر اساس اطلاعات ابعاد و ولتاژ ارائه‌شده به‌صورت خودکار محاسبه شده است و جهت تایید نهایی، بازدید و تاییدیهٔ کارشناس فنی لازم است.</div>';
 
     sheet.innerHTML = html;
-    drawTopView(document.getElementById('prop-viz'), chosen, ctx.Lbox, ctx.Wbox);
+    renderFourViews(
+      document.getElementById('prop-viz-top'),
+      document.getElementById('prop-viz-front'),
+      document.getElementById('prop-viz-side'),
+      document.getElementById('prop-viz-iso'),
+      chosen, ctx.Lbox, ctx.Wbox, ctx.Hbox
+    );
 
     setTimeout(function () { window.print(); }, 50);
   }
