@@ -1682,31 +1682,34 @@ function showView(name) {
     [166, 101.5, 59, 42.09, 25.18, 21.165, 17.15, 10.23, 5.18]
   ];
 
-  // ===================== کاتالوگ دستگاه‌های یوپی‌اس Faran (۶ خانواده محصول خوانده‌شده) =====================
-  // راندمان‌ها تا حد امکان «راندمان حالت باتری» از کاتالوگ‌اند؛ برای مدل‌هایی که فقط یک عدد کلی داده شده، همان عدد استفاده شده است.
+  // ===================== کاتالوگ دستگاه‌های یوپی‌اس Faran (دیتابیس اصلاح‌شده دستی توسط کاربر) =====================
+  // ولتاژ DC برخی مدل‌ها بازه‌ای/قابل‌تنظیم است (با تعداد باتری ۱۲ولتی سری)؛ vdcMin=vdcMax یعنی ولتاژ ثابت (غیرقابل‌تنظیم).
   var UPS_MODELS = [
-    { model: 'Trust', kva: 1, kw: 0.8, inPhase: 1, outPhase: 1, vdc: 24, eff: 0.80 },
-    { model: 'Trust', kva: 1.5, kw: 1.2, inPhase: 1, outPhase: 1, vdc: 36, eff: 0.80 },
-    { model: 'Trust', kva: 2, kw: 1.6, inPhase: 1, outPhase: 1, vdc: 48, eff: 0.85 },
-    { model: 'Trust', kva: 3, kw: 2.4, inPhase: 1, outPhase: 1, vdc: 48, eff: 0.85 },
-    { model: 'Titan Plus', kva: 1, kw: 0.9, inPhase: 1, outPhase: 1, vdc: 36, eff: 0.85 },
-    { model: 'Titan Plus', kva: 2, kw: 1.8, inPhase: 1, outPhase: 1, vdc: 24, eff: 0.86 },
-    { model: 'Titan Plus', kva: 3, kw: 2.7, inPhase: 1, outPhase: 1, vdc: 48, eff: 0.86 },
-    { model: 'Titan Plus', kva: 6, kw: 5.4, inPhase: 1, outPhase: 1, vdc: 96, eff: 0.91 },
-    { model: 'Titan Plus', kva: 10, kw: 9, inPhase: 1, outPhase: 1, vdc: 240, eff: 0.91 },
-    { model: 'Titan Promax', kva: 6, kw: 6, inPhase: 1, outPhase: 1, vdc: 192, eff: 0.94 },
-    { model: 'Titan Promax', kva: 10, kw: 10, inPhase: 1, outPhase: 1, vdc: 192, eff: 0.94 },
-    { model: 'Titan Plus (۳/۱)', kva: 10, kw: 10, inPhase: 3, outPhase: 1, vdc: 192, eff: 0.94 },
-    { model: 'Titan Plus (۳/۱)', kva: 15, kw: 15, inPhase: 3, outPhase: 1, vdc: 192, eff: 0.94 },
-    { model: 'Titan Plus (۳/۱)', kva: 20, kw: 20, inPhase: 3, outPhase: 1, vdc: 192, eff: 0.94 },
-    { model: 'Comet Plus', kva: 10, kw: 10, inPhase: 3, outPhase: 3, vdc: 240, eff: 0.95 },
-    { model: 'Comet Plus', kva: 20, kw: 20, inPhase: 3, outPhase: 3, vdc: 240, eff: 0.95 },
-    { model: 'Comet Plus', kva: 30, kw: 30, inPhase: 3, outPhase: 3, vdc: 240, eff: 0.95 },
-    { model: 'Comet Plus', kva: 40, kw: 40, inPhase: 3, outPhase: 3, vdc: 192, eff: 0.96 },
-    { model: 'Comet Plus', kva: 60, kw: 60, inPhase: 3, outPhase: 3, vdc: 192, eff: 0.96 },
-    { model: 'Comet Plus', kva: 80, kw: 80, inPhase: 3, outPhase: 3, vdc: 192, eff: 0.96 },
-    { model: 'Comet Plus', kva: 120, kw: 120, inPhase: 3, outPhase: 3, vdc: 192, eff: 0.96 }
+    { model: 'Trust', kva: 1, kw: 0.8, inPhase: 1, outPhase: 1, vdcMin: 24, vdcMax: 24, eff: 0.80 },
+    { model: 'Trust', kva: 1.5, kw: 1.2, inPhase: 1, outPhase: 1, vdcMin: 24, vdcMax: 24, eff: 0.80 },
+    { model: 'Trust', kva: 2, kw: 1.6, inPhase: 1, outPhase: 1, vdcMin: 48, vdcMax: 48, eff: 0.85 },
+    { model: 'Trust', kva: 3, kw: 2.4, inPhase: 1, outPhase: 1, vdcMin: 48, vdcMax: 48, eff: 0.85 },
+    { model: 'Titan Plus', kva: 1, kw: 0.9, inPhase: 1, outPhase: 1, vdcMin: 36, vdcMax: 36, eff: 0.85 },
+    { model: 'Titan Plus', kva: 2, kw: 1.8, inPhase: 1, outPhase: 1, vdcMin: 48, vdcMax: 48, eff: 0.86 },
+    { model: 'Titan Plus', kva: 3, kw: 2.7, inPhase: 1, outPhase: 1, vdcMin: 96, vdcMax: 96, eff: 0.86 },
+    { model: 'Titan Promax', kva: 6, kw: 6, inPhase: 1, outPhase: 1, vdcMin: 192, vdcMax: 240, eff: 0.94 },
+    { model: 'Titan Promax', kva: 10, kw: 10, inPhase: 1, outPhase: 1, vdcMin: 192, vdcMax: 240, eff: 0.94 },
+    { model: 'Titan Plus (۳/۱)', kva: 10, kw: 10, inPhase: 3, outPhase: 1, vdcMin: 384, vdcMax: 384, eff: 0.94 },
+    { model: 'Titan Plus (۳/۱)', kva: 15, kw: 15, inPhase: 3, outPhase: 1, vdcMin: 384, vdcMax: 384, eff: 0.94 },
+    { model: 'Titan Plus (۳/۱)', kva: 20, kw: 20, inPhase: 3, outPhase: 1, vdcMin: 384, vdcMax: 384, eff: 0.94 },
+    { model: 'Comet Plus', kva: 10, kw: 10, inPhase: 3, outPhase: 3, vdcMin: 384, vdcMax: 480, eff: 0.95 },
+    { model: 'Comet Plus', kva: 20, kw: 20, inPhase: 3, outPhase: 3, vdcMin: 384, vdcMax: 480, eff: 0.95 },
+    { model: 'Comet Plus', kva: 30, kw: 30, inPhase: 3, outPhase: 3, vdcMin: 384, vdcMax: 480, eff: 0.95 },
+    { model: 'Comet Plus', kva: 40, kw: 40, inPhase: 3, outPhase: 3, vdcMin: 384, vdcMax: 552, eff: 0.96 },
+    { model: 'Comet Plus', kva: 60, kw: 60, inPhase: 3, outPhase: 3, vdcMin: 384, vdcMax: 552, eff: 0.96 },
+    { model: 'Comet Plus', kva: 80, kw: 80, inPhase: 3, outPhase: 3, vdcMin: 384, vdcMax: 552, eff: 0.96 },
+    { model: 'Comet Plus', kva: 120, kw: 120, inPhase: 3, outPhase: 3, vdcMin: 384, vdcMax: 552, eff: 0.96 }
   ];
+
+  function isRangeModel(m) { return m.vdcMax > m.vdcMin; }
+  function minBattCount(m) { return Math.round(m.vdcMin / 12); }
+  function maxBattCount(m) { return Math.round(m.vdcMax / 12); }
+  function effectiveVdc(m, battCount) { return isRangeModel(m) ? battCount * 12 : m.vdcMin; }
 
   function ltr(s) { return '<bdi dir="ltr">' + s + '</bdi>'; }
 
@@ -1730,8 +1733,8 @@ function showView(name) {
     return list;
   }
 
-  function requiredCurrentFor(model, loadW) {
-    return (loadW / model.eff) / model.vdc;
+  function requiredCurrentFor(model, loadW, vdc) {
+    return (loadW / model.eff) / vdc;
   }
 
   function batteryOptions(current, targetMinutes) {
@@ -1773,7 +1776,10 @@ function showView(name) {
     if (!valid) return;
 
     var models = qualifyingModels(power, inPhase, outPhase);
-    renderResults({ power: power, backup: backup, inPhase: inPhase, outPhase: outPhase, models: models, chosenModelIdx: 0, chosenCap: null });
+    renderResults({
+      power: power, backup: backup, inPhase: inPhase, outPhase: outPhase, models: models,
+      chosenModelIdx: 0, battCount12v: models.length ? minBattCount(models[0]) : null, chosenCap: null
+    });
   });
 
   function statItem(k, v) {
@@ -1782,17 +1788,24 @@ function showView(name) {
 
   function phaseLabel(p) { return p === 1 ? 'تک‌فاز' : 'سه‌فاز'; }
 
+  function vdcRangeLabel(m) {
+    return isRangeModel(m)
+      ? ltr(m.vdcMin + '–' + m.vdcMax + ' V') + ' <span class="hint">(قابل‌تنظیم)</span>'
+      : ltr(m.vdcMin + ' V');
+  }
+
   function modelRow(m, idx, ctx) {
     var isChosen = idx === ctx.chosenModelIdx;
-    var current = requiredCurrentFor(m, ctx.power);
+    var vdcForRow = isRangeModel(m) ? minBattCount(m) * 12 : m.vdcMin;
+    var current = requiredCurrentFor(m, ctx.power, vdcForRow);
     return '<tr class="' + (isChosen ? 'chosen' : '') + '">' +
       '<td><input type="radio" name="ups-switch-model" class="ups-switch-model-radio" data-idx="' + idx + '"' + (isChosen ? ' checked' : '') + '></td>' +
       '<td>' + ltr(m.model) + '</td>' +
       '<td>' + ltr(m.kva + ' kVA / ' + m.kw + ' kW') + '</td>' +
       '<td>' + phaseLabel(m.inPhase) + ' / ' + phaseLabel(m.outPhase) + '</td>' +
       '<td>' + ltr(Math.round(m.eff * 100) + '%') + '</td>' +
-      '<td>' + ltr(m.vdc + ' V') + '</td>' +
-      '<td>' + ltr((Math.round(current * 100) / 100) + ' A') + '</td>' +
+      '<td>' + vdcRangeLabel(m) + '</td>' +
+      '<td>' + ltr((Math.round(current * 100) / 100) + ' A') + (isRangeModel(m) ? ' <span class="hint">(در کمینه تعداد باتری)</span>' : '') + '</td>' +
       '</tr>';
   }
 
@@ -1815,14 +1828,18 @@ function showView(name) {
 
     if (!ctx.models.length) {
       html += '<div class="banner error">با توان ' + ltr(ctx.power + ' وات') +
-        ' و ترکیب فاز انتخابی، هیچ دستگاهی از کاتالوگ موجود (فعلاً فقط ۶ خانواده محصول Faran) پیدا نشد. ' +
+        ' و ترکیب فاز انتخابی، هیچ دستگاهی از کاتالوگ موجود پیدا نشد. ' +
         'توان کمتر یا ترکیب فاز دیگری را بررسی کنید.</div>';
       resultsBody.innerHTML = html;
       return;
     }
 
     var chosenModel = ctx.models[ctx.chosenModelIdx];
-    var current = requiredCurrentFor(chosenModel, ctx.power);
+    var rangeModel = isRangeModel(chosenModel);
+    if (ctx.battCount12v === null || ctx.battCount12v === undefined) ctx.battCount12v = minBattCount(chosenModel);
+    ctx.battCount12v = Math.max(minBattCount(chosenModel), Math.min(maxBattCount(chosenModel), ctx.battCount12v));
+    var vdc = effectiveVdc(chosenModel, ctx.battCount12v);
+    var current = requiredCurrentFor(chosenModel, ctx.power, vdc);
     var battOpts = batteryOptions(current, ctx.backup);
 
     if (ctx.chosenCap === null) {
@@ -1845,7 +1862,8 @@ function showView(name) {
     html += statItem('مدت بک‌آپ درخواستی', ctx.backup + ' دقیقه');
     html += statItem('دستگاه انتخابی', chosenModel.model + ' ' + chosenModel.kva + 'kVA');
     html += statItem('راندمان دستگاه (حالت باتری)', Math.round(chosenModel.eff * 100) + '%');
-    html += statItem('ولتاژ DC دستگاه', chosenModel.vdc + ' V');
+    html += statItem('ولتاژ DC این پیکربندی', vdc + ' V');
+    if (rangeModel) html += statItem('تعداد باتری ۱۲ولتی سری', ctx.battCount12v + ' عدد');
     html += statItem('جریان لازم از باتری', (Math.round(current * 100) / 100) + ' A');
     html += '</div>';
 
@@ -1855,6 +1873,15 @@ function showView(name) {
     ctx.models.forEach(function (m, idx) { html += modelRow(m, idx, ctx); });
     html += '</tbody></table>';
 
+    if (rangeModel) {
+      html += '<div class="field" id="ups-f-battcount" style="max-width:420px;">' +
+        '<label for="ups-battcount">تعداد باتری ۱۲ولتی سری (برای ' + ltr(chosenModel.model + ' ' + chosenModel.kva + 'kVA') +
+        '، بین ' + ltr(minBattCount(chosenModel) + '') + ' تا ' + ltr(maxBattCount(chosenModel) + '') + ' عدد قابل‌تنظیم)</label>' +
+        '<input type="number" id="ups-battcount" min="' + minBattCount(chosenModel) + '" max="' + maxBattCount(chosenModel) + '" step="1" value="' + ctx.battCount12v + '">' +
+        '<div class="hint">ولتاژ DC نهایی = تعداد باتری × ۱۲ ولت؛ با افزایش تعداد باتری، جریان لازم (و در نتیجه ظرفیت آمپرساعتی موردنیاز) کاهش می‌یابد.</div>' +
+        '</div>';
+    }
+
     html += '<h3 class="sec-title">گزینه‌های ظرفیت باتری برای ' + ltr(chosenModel.model + ' ' + chosenModel.kva + 'kVA') + '</h3>';
     html += '<p class="sec-caption">مدت بک‌آپ هر ظرفیت در جریان ' + ltr((Math.round(current * 100) / 100) + ' A') +
       ' (با درون‌یابی لگاریتمی روی جدول تخلیه باتری). ظرفیت‌های «کافی» به هدف ' + ltr(ctx.backup + ' دقیقه') + ' می‌رسند یا از آن بیشترند.</p>';
@@ -1863,11 +1890,12 @@ function showView(name) {
     html += '</tbody></table>';
 
     html += '<details><summary>راهنما و فرضیات محاسبه</summary><ul>' +
-      '<li>جریان لازم از باتری از رابطه I = (توان مصرفی ÷ راندمان دستگاه) ÷ ولتاژ DC دستگاه به‌دست می‌آید.</li>' +
-      '<li>راندمان استفاده‌شده برای هر دستگاه تا حد امکان «راندمان حالت باتری» (Battery Mode) کاتالوگ است، نه راندمان حالت AC؛ چون هنگام قطع برق، توان از مسیر باتری←اینورتر رد می‌شود. برای مدل‌هایی که کاتالوگ فقط یک عدد راندمان کلی داده (بدون تفکیک AC/باتری)، همان عدد به‌عنوان تقریب استفاده شده است.</li>' +
+      '<li>جریان لازم از باتری از رابطه I = (توان مصرفی ÷ راندمان دستگاه) ÷ ولتاژ DC به‌دست می‌آید.</li>' +
+      '<li>راندمان استفاده‌شده برای هر دستگاه تا حد امکان «راندمان حالت باتری» (Battery Mode) کاتالوگ است، نه راندمان حالت AC؛ چون هنگام قطع برق، توان از مسیر باتری←اینورتر رد می‌شود.</li>' +
+      '<li>برخی دستگاه‌ها ولتاژ DC بازه‌ای/قابل‌تنظیم دارند (با تعداد متغیر باتری ۱۲ولتی سری)؛ برای این دستگاه‌ها می‌توانید تعداد باتری را در بازه مجاز خودش تنظیم کنید تا جریان لازم و ظرفیت باتری بازمحاسبه شود.</li>' +
       '<li>مدت بک‌آپ هر ظرفیت باتری با درون‌یابی لگاریتمی (log-log) روی جدول تخلیه باتری (ولتاژ پایانی ۱.۷ ولت به‌ازای هر سلول) محاسبه می‌شود؛ روش استاندارد برای منحنی تخلیه باتری سرب-اسیدی.</li>' +
       '<li>دستگاه پیش‌فرض، کوچک‌ترین دستگاهی است که هم فاز ورودی/خروجی‌اش با انتخاب شما یکی باشد و هم توانش (kW) کمتر از توان مصرفی بار نباشد؛ از جدول بالا می‌توانید دستگاه دیگری هم انتخاب کنید.</li>' +
-      '<li>این نسخه فقط شامل ۶ خانواده محصول از کاتالوگ Faran است (Trust؛ Titan Plus ۱ تا ۱۰kVA؛ Titan Promax؛ Titan Plus سه‌فاز/تک‌فاز؛ Comet Plus در دو رنج توان)؛ با افزودن صفحات بیشتر کاتالوگ، فهرست کامل‌تر خواهد شد.</li>' +
+      '<li>این دیتابیس نسخه‌ی اصلاح‌شده‌ی دستی کاربر است (Trust؛ Titan Plus ۱ تا ۳kVA؛ Titan Promax؛ Titan Plus سه‌فاز/تک‌فاز؛ Comet Plus در دو رنج توان).</li>' +
       '</ul></details>';
 
     resultsBody.innerHTML = html;
@@ -1877,6 +1905,7 @@ function showView(name) {
         var idx = parseInt(radio.getAttribute('data-idx'), 10);
         var newCtx = shallowCopy(ctx);
         newCtx.chosenModelIdx = idx;
+        newCtx.battCount12v = minBattCount(ctx.models[idx]);
         newCtx.chosenCap = null;
         renderResults(newCtx);
       });
@@ -1889,6 +1918,17 @@ function showView(name) {
         renderResults(newCtx);
       });
     });
+    var battCountInput = document.getElementById('ups-battcount');
+    if (battCountInput) {
+      battCountInput.addEventListener('input', function () {
+        var val = parseInt(battCountInput.value, 10);
+        if (isNaN(val)) return;
+        var newCtx = shallowCopy(ctx);
+        newCtx.battCount12v = val;
+        newCtx.chosenCap = null;
+        renderResults(newCtx);
+      });
+    }
   }
 
   function shallowCopy(obj) {
