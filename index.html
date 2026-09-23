@@ -85,6 +85,13 @@
   .radio-row{ display:flex; align-items:center; gap:8px; margin:8px 0; font-size:.88rem; }
   .radio-row label{ margin:0; font-weight:400; color:var(--ink-700); }
   input[type=radio]{ width:16px; height:16px; accent-color:var(--brand-600); }
+  input[type=checkbox]{ width:16px; height:16px; accent-color:var(--brand-600); }
+  .checkbox-row{ display:flex; align-items:center; gap:8px; margin:10px 0 16px; font-size:.85rem; }
+  .checkbox-row label{ margin:0; font-weight:400; color:var(--ink-700); cursor:pointer; }
+  .load-item{ border:1px solid var(--line-200); border-radius:var(--radius-sm); padding:8px 10px; margin-bottom:8px; }
+  .load-item-name{ font-size:.85rem; font-weight:600; color:var(--ink-900); margin-bottom:4px; }
+  .load-item-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:.82rem; color:var(--ink-600); }
+  .load-item-remove{ background:none; border:none; color:var(--danger-700); cursor:pointer; font-size:.78rem; padding:2px 6px; white-space:nowrap; }
 
   button{ cursor:pointer; border:none; border-radius:var(--radius-sm); font-family:inherit; font-size:.92rem; font-weight:600; padding:12px 18px; transition:background .15s, transform .05s, box-shadow .15s; }
   .btn-primary{ width:100%; background:linear-gradient(135deg,var(--brand-600),var(--brand-800)); color:#fff; box-shadow:var(--shadow-sm); }
@@ -470,6 +477,41 @@
         <input type="number" id="ups-power" min="1" step="any" placeholder="مثلاً 3000">
         <div class="error-text">توان مصرفی را به‌صورت عدد مثبت وارد کنید.</div>
       </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="ups-itemized-toggle">
+        <label for="ups-itemized-toggle">ثبت توان‌های جزئی (به‌جای عدد کلی، از لیست دستگاه‌ها انتخاب کنید)</label>
+      </div>
+
+      <div class="field" id="ups-itemized-section" style="display:none;">
+        <label for="ups-item-device">دستگاه</label>
+        <select id="ups-item-device"></select>
+
+        <div class="field" id="ups-item-custom-wrap" style="display:none;margin-top:10px;margin-bottom:0;">
+          <label for="ups-item-custom-name">نام دستگاه سفارشی</label>
+          <input type="text" id="ups-item-custom-name" placeholder="مثلاً ...">
+        </div>
+
+        <div class="date-row" style="margin-top:10px;">
+          <div style="flex:1;">
+            <label for="ups-item-qty" style="font-size:.78rem;display:block;margin-bottom:4px;color:var(--ink-600);">تعداد</label>
+            <input type="number" id="ups-item-qty" min="1" step="1" value="1">
+          </div>
+          <div style="flex:1;">
+            <label for="ups-item-va" style="font-size:.78rem;display:block;margin-bottom:4px;color:var(--ink-600);">توان واحد (VA)</label>
+            <input type="number" id="ups-item-va" min="0" step="any" value="280">
+          </div>
+        </div>
+
+        <button type="button" class="btn-secondary" id="ups-item-add" style="margin-top:10px;">+ افزودن به لیست مصرف</button>
+
+        <div id="ups-item-list" style="margin-top:14px;"></div>
+        <div class="stat" id="ups-item-total-box" style="display:none;margin-top:4px;">
+          <div class="k">جمع کل توان از ریز مصرف‌ها</div>
+          <div class="v" id="ups-item-total-value">0 VA</div>
+        </div>
+      </div>
+
       <div class="field" id="ups-f-backup">
         <label for="ups-backup">مدت زمان بک‌آپ موردنیاز (دقیقه)</label>
         <input type="number" id="ups-backup" min="1" step="any" placeholder="مثلاً 30">
@@ -1700,6 +1742,83 @@ function showView(name) {
     });
   }
 
+  // ===================== دیتابیس مصرف تجهیزات رایج (VA) برای «ثبت توان‌های جزئی» =====================
+  var LOAD_DEVICES = [
+    { group: 'کامپیوتر و تجهیزات IT', name: 'کامپیوتر اداری', va: 280 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'کامپیوتر گیمینگ', va: 630 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'لپ‌تاپ', va: 70 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'مانیتور 24 اینچ', va: 32 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'مانیتور 27 اینچ', va: 48 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'سرور', va: 790 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'NAS', va: 100 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'سوئیچ شبکه', va: 35 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'مودم / روتر', va: 17 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'پرینتر جوهرافشان', va: 45 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'پرینتر لیزری', va: 1140 },
+    { group: 'کامپیوتر و تجهیزات IT', name: 'دستگاه کپی', va: 2000 },
+    { group: 'تصویر و دوربین', name: 'تلویزیون LED', va: 105 },
+    { group: 'تصویر و دوربین', name: 'DVR / NVR', va: 33 },
+    { group: 'تصویر و دوربین', name: 'دوربین مداربسته', va: 12 },
+    { group: 'روشنایی', name: 'لامپ LED', va: 11 },
+    { group: 'روشنایی', name: 'پنل LED', va: 45 },
+    { group: 'روشنایی', name: 'لامپ فلورسنت', va: 75 },
+    { group: 'مخابرات و پرداخت', name: 'تلفن VoIP', va: 9 },
+    { group: 'مخابرات و پرداخت', name: 'دستگاه کارتخوان', va: 11 },
+    { group: 'شارژر', name: 'شارژر موبایل', va: 11 },
+    { group: 'شارژر', name: 'شارژر لپ‌تاپ', va: 72 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'یخچال', va: 882 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'فریزر', va: 706 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'کولر گازی', va: 6667 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'پنکه', va: 225 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'جاروبرقی', va: 3000 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'ماشین لباسشویی', va: 2625 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'ماشین ظرفشویی', va: 1833 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'مایکروویو', va: 2000 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'چای‌ساز', va: 1980 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'کتری برقی', va: 2200 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'قهوه‌ساز', va: 1200 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'توستر', va: 1210 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'مخلوط‌کن', va: 1875 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'بخاری برقی', va: 1650 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'هیتر برقی', va: 2200 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'آبگرمکن برقی', va: 4950 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'سشوار', va: 2160 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'اتو', va: 1800 },
+    { group: 'لوازم خانگی و آشپزخانه', name: 'ریش‌تراش', va: 17 },
+    { group: 'پزشکی', name: 'دستگاه CPAP', va: 87 },
+    { group: 'پزشکی', name: 'اکسیژن‌ساز', va: 1333 },
+    { group: 'امنیتی و حفاظتی', name: 'سیستم اعلام حریق', va: 56 },
+    { group: 'امنیتی و حفاظتی', name: 'دزدگیر', va: 22 },
+    { group: 'امنیتی و حفاظتی', name: 'اکسس کنترل', va: 50 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'پمپ آب 0.5 اسب', va: 2133 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'پمپ آب 1 اسب', va: 4000 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'پمپ آب 1.5 اسب', va: 5500 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'پمپ آب 2 اسب', va: 7500 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'کمپرسور کوچک', va: 5333 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'فن صنعتی', va: 2813 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'موتور 1 اسب', va: 3750 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'موتور 2 اسب', va: 7500 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'موتور 3 اسب', va: 10732 },
+    { group: 'پمپ، موتور و تجهیزات صنعتی', name: 'موتور 5 اسب', va: 18049 }
+  ];
+
+  (function buildDeviceSelect() {
+    var sel = document.getElementById('ups-item-device');
+    var html = '';
+    var currentGroup = null;
+    LOAD_DEVICES.forEach(function (d, idx) {
+      if (d.group !== currentGroup) {
+        if (currentGroup !== null) html += '</optgroup>';
+        html += '<optgroup label="' + d.group + '">';
+        currentGroup = d.group;
+      }
+      html += '<option value="' + idx + '">' + d.name + ' \u2014 ' + d.va + ' VA</option>';
+    });
+    html += '</optgroup>';
+    html += '<option value="custom">\u0633\u0641\u0627\u0631\u0634\u06CC / \u06A9\u0627\u0633\u062A\u0648\u0645...</option>';
+    sel.innerHTML = html;
+  })();
+
   // ===================== اتصال به DOM =====================
   var form = document.getElementById('ups-form');
   var resultsBody = document.getElementById('ups-results-body');
@@ -1710,6 +1829,90 @@ function showView(name) {
     document.getElementById(fieldId).classList.toggle('invalid', invalid);
   }
 
+  var upsItemizedMode = false;
+  var upsLoadItems = [];
+  var powerField = document.getElementById('ups-f-power');
+  var itemizedSection = document.getElementById('ups-itemized-section');
+  var powerInput = document.getElementById('ups-power');
+  var deviceSelect = document.getElementById('ups-item-device');
+  var customNameWrap = document.getElementById('ups-item-custom-wrap');
+  var customNameInput = document.getElementById('ups-item-custom-name');
+  var itemQtyInput = document.getElementById('ups-item-qty');
+  var itemVaInput = document.getElementById('ups-item-va');
+  var itemListEl = document.getElementById('ups-item-list');
+  var itemTotalBox = document.getElementById('ups-item-total-box');
+  var itemTotalValue = document.getElementById('ups-item-total-value');
+
+  itemVaInput.value = LOAD_DEVICES[0].va;
+
+  document.getElementById('ups-itemized-toggle').addEventListener('change', function (e) {
+    upsItemizedMode = e.target.checked;
+    powerField.style.display = upsItemizedMode ? 'none' : '';
+    itemizedSection.style.display = upsItemizedMode ? '' : 'none';
+    powerInput.readOnly = upsItemizedMode;
+    recomputeLoadTotal();
+  });
+
+  deviceSelect.addEventListener('change', function () {
+    if (deviceSelect.value === 'custom') {
+      customNameWrap.style.display = '';
+      customNameInput.value = '';
+      itemVaInput.value = '';
+    } else {
+      customNameWrap.style.display = 'none';
+      itemVaInput.value = LOAD_DEVICES[parseInt(deviceSelect.value, 10)].va;
+    }
+  });
+
+  document.getElementById('ups-item-add').addEventListener('click', function () {
+    var qty = parseInt(itemQtyInput.value, 10);
+    var va = parseFloat(itemVaInput.value);
+    var name;
+    if (deviceSelect.value === 'custom') {
+      name = (customNameInput.value || '').trim();
+      if (!name) { customNameInput.focus(); return; }
+    } else {
+      name = LOAD_DEVICES[parseInt(deviceSelect.value, 10)].name;
+    }
+    if (!(qty > 0) || !(va >= 0)) return;
+    upsLoadItems.push({ name: name, qty: qty, va: va });
+    itemQtyInput.value = 1;
+    renderLoadItemsList();
+    recomputeLoadTotal();
+  });
+
+  function renderLoadItemsList() {
+    var html = '';
+    upsLoadItems.forEach(function (it, idx) {
+      var subtotal = Math.round(it.qty * it.va * 100) / 100;
+      html += '<div class="load-item" data-idx="' + idx + '">' +
+        '<div class="load-item-name">' + it.name + '</div>' +
+        '<div class="load-item-row">' +
+        '<span>' + ltr(it.qty + ' \u00D7 ' + it.va + ' VA = ' + subtotal + ' VA') + '</span>' +
+        '<button type="button" class="load-item-remove" data-idx="' + idx + '">\u2715 \u062D\u0630\u0641</button>' +
+        '</div></div>';
+    });
+    itemListEl.innerHTML = html;
+    itemListEl.querySelectorAll('.load-item-remove').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(btn.getAttribute('data-idx'), 10);
+        upsLoadItems.splice(idx, 1);
+        renderLoadItemsList();
+        recomputeLoadTotal();
+      });
+    });
+  }
+
+  function recomputeLoadTotal() {
+    var total = upsLoadItems.reduce(function (sum, it) { return sum + it.qty * it.va; }, 0);
+    total = Math.round(total * 100) / 100;
+    itemTotalBox.style.display = upsLoadItems.length ? '' : 'none';
+    itemTotalValue.innerHTML = ltr(total + ' VA');
+    if (upsItemizedMode) {
+      powerInput.value = total || '';
+    }
+  }
+
   document.getElementById('ups-btn-reset').addEventListener('click', function () {
     form.reset();
     ['ups-f-power', 'ups-f-backup'].forEach(function (id) {
@@ -1717,6 +1920,15 @@ function showView(name) {
     });
     resultsBody.innerHTML = EMPTY_MSG;
     lastResultCtx = null;
+    upsItemizedMode = false;
+    upsLoadItems = [];
+    powerField.style.display = '';
+    itemizedSection.style.display = 'none';
+    powerInput.readOnly = false;
+    customNameWrap.style.display = 'none';
+    itemVaInput.value = LOAD_DEVICES[0].va;
+    renderLoadItemsList();
+    recomputeLoadTotal();
   });
 
   form.addEventListener('submit', function (e) {
@@ -1736,7 +1948,8 @@ function showView(name) {
     var models = qualifyingModels(power, inPhase, outPhase);
     renderResults({
       power: power, backup: backup, inPhase: inPhase, outPhase: outPhase, models: models,
-      chosenModelIdx: 0, battCount12v: models.length ? minBattCount(models[0]) : null, chosenCap: null
+      chosenModelIdx: 0, battCount12v: models.length ? minBattCount(models[0]) : null, chosenCap: null,
+      itemized: upsItemizedMode, items: upsItemizedMode ? upsLoadItems.slice() : null
     });
   });
 
@@ -1968,6 +2181,16 @@ function showView(name) {
       '<div><span class="lbl">فاز برق ورودی: </span>' + phaseLabel(ctx.inPhase) + '</div>' +
       '<div><span class="lbl">فاز برق خروجی: </span>' + phaseLabel(ctx.outPhase) + '</div>' +
       '</div></div>';
+
+    if (ctx.itemized && ctx.items && ctx.items.length) {
+      var itemRowsHtml = ctx.items.map(function (it) {
+        var subtotal = Math.round(it.qty * it.va * 100) / 100;
+        return '<tr><td>' + it.name + '</td><td>' + ltr(it.qty) + '</td><td>' + ltr(it.va + ' VA') + '</td><td>' + ltr(subtotal + ' VA') + '</td></tr>';
+      }).join('');
+      html += '<div class="prop-section"><h3>ریز مصرف‌ها</h3>' +
+        '<table><thead><tr><th>دستگاه</th><th>تعداد</th><th>توان واحد</th><th>جمع</th></tr></thead><tbody>' + itemRowsHtml + '</tbody></table>' +
+        '</div>';
+    }
 
     html += '<div class="prop-section"><h3>دستگاه و باتری پیشنهادی</h3><div class="prop-highlight">' +
       '<div class="model">' + ltr(chosenModel.model + ' ' + chosenModel.kva + 'kVA') + ' — باتری ' + ltr(ctx.chosenCap + 'Ah') + '</div>' +
