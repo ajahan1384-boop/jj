@@ -194,7 +194,8 @@
 
   /* ---- hub (landing page) rules ---- */
   main > p.lead{ text-align:center; color:var(--ink-600); font-size:1rem; margin:0 0 36px; }
-  .picker-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .picker-grid{ display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:18px; }
+  @media (max-width:900px){ .picker-grid{ grid-template-columns:1fr 1fr; } }
   @media (max-width:640px){ .picker-grid{ grid-template-columns:1fr; } }
   .picker-card-img{
     display:block; border-radius:var(--radius-lg); overflow:hidden; aspect-ratio:1/1;
