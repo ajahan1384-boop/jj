@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>به‌روزرسانی قیمت اکسل دیجی‌کالا</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1a2540;
+    --panel-2: #212f52;
+    --border: #2c3a5e;
+    --text: #e7ecf7;
+    --muted: #97a3c2;
+    --accent: #4f7cff;
+    --accent-2: #3563e0;
+    --ok: #37c98f;
+    --fail: #ef5470;
+    --warn: #f2b84b;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Vazirmatn, "Segoe UI", Tahoma, "Iranian Sans", sans-serif;
+    min-height: 100%;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px 60px;
+  }
+  .wrap { width: 100%; max-width: 780px; }
+  header { text-align: center; margin-bottom: 26px; }
+  header h1 { font-size: 22px; margin: 0 0 6px; }
+  header p { color: var(--muted); font-size: 14px; margin: 0; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .card h2 {
+    font-size: 15px;
+    margin: 0 0 14px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+
+  label.field-label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 6px; }
+  input[type="number"], input[type="text"] {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 15px;
+    width: 100%;
+    outline: none;
+  }
+  input[type="number"]:focus, input[type="text"]:focus { border-color: var(--accent); }
+
+  .multiplier-box { max-width: 220px; }
+
+  .dropzone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    color: var(--muted);
+    transition: border-color .15s, background .15s;
+  }
+  .dropzone.dragover { border-color: var(--accent); background: rgba(79,124,255,0.08); color: var(--text); }
+  .dropzone strong { color: var(--text); }
+  .dropzone input[type="file"] { display: none; }
+
+  .file-count { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .file-count.warn { color: var(--warn); }
+
+  .file-list { margin-top: 14px; max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .file-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 12px; font-size: 13px;
+  }
+  .file-item .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: 8px; }
+  .file-item .size { color: var(--muted); flex-shrink: 0; margin-inline-end: 10px; }
+  .file-item button {
+    background: none; border: none; color: var(--fail); cursor: pointer; font-size: 15px; padding: 2px 6px;
+  }
+  .file-item button:hover { color: #ff7d93; }
+
+  details.advanced { margin-top: 14px; }
+  details.advanced summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+  .adv-row { margin-top: 10px; max-width: 260px; }
+
+  .actions { display: flex; gap: 10px; align-items: center; justify-content: flex-end; }
+  button.btn {
+    border: none; border-radius: 10px; padding: 11px 22px; font-size: 14px;
+    cursor: pointer; font-weight: 600; transition: opacity .15s, transform .05s;
+  }
+  button.btn:active { transform: scale(0.98); }
+  button.btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+  .btn-secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+
+  .progress-wrap { display: none; }
+  .progress-wrap.show { display: block; }
+  .progress-bar-bg {
+    background: var(--panel-2); border-radius: 999px; height: 10px; overflow: hidden; margin-bottom: 8px;
+  }
+  .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .25s; }
+  .progress-status { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; }
+
+  .log { margin-top: 14px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .log-item {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; font-size: 13px;
+  }
+  .log-item.ok { border-inline-start: 3px solid var(--ok); }
+  .log-item.fail { border-inline-start: 3px solid var(--fail); }
+  .log-item .icon { flex-shrink: 0; }
+  .log-item .info { flex: 1; }
+  .log-item .info .fname { font-weight: 600; margin-bottom: 2px; word-break: break-all; }
+  .log-item .info .msg { color: var(--muted); }
+  .log-item a.dl {
+    color: var(--accent); text-decoration: none; font-size: 12px; white-space: nowrap; flex-shrink: 0;
+  }
+  .log-item a.dl:hover { text-decoration: underline; }
+
+  .summary { margin-top: 14px; font-size: 14px; }
+  .summary .ok-count { color: var(--ok); }
+  .summary .fail-count { color: var(--fail); }
+
+  .banner {
+    display: none; background: rgba(239,84,112,0.12); border: 1px solid var(--fail);
+    color: #ffb3c0; padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 14px;
+  }
+  .banner.show { display: block; }
+
+  .hint { color: var(--muted); font-size: 12px; margin-top: 8px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>به‌روزرسانی قیمت اکسل دیجی‌کالا</h1>
+    <p>ستون J («قیمت فروش») شیت «داده ها» را در ضریب دلخواه ضرب و تا ۴ رقم اعشار گرد به بالا می‌کند — کاملاً روی همین کامپیوتر، بدون ارسال به اینترنت.</p>
+  </header>
+
+  <div id="banner" class="banner"></div>
+
+  <div class="card">
+    <h2>۱. ضریب قیمت</h2>
+    <div class="multiplier-box">
+      <label class="field-label" for="multiplier">مثلاً 1.15 برای ۱۵٪ افزایش</label>
+      <input type="text" id="multiplier" inputmode="decimal" value="1" placeholder="1.15">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>۲. فایل‌های اکسل (حداکثر پیشنهادی <span id="maxFiles">۵۰</span> فایل هم‌زمان)</h2>
+    <div class="dropzone" id="dropzone">
+      <div><strong>فایل‌ها را اینجا رها کنید</strong> یا برای انتخاب کلیک کنید</div>
+      <div style="font-size:12px;margin-top:6px;">فقط فایل‌های xlsx</div>
+      <input type="file" id="fileInput" multiple accept=".xlsx">
+    </div>
+    <div class="file-count" id="fileCount">هیچ فایلی انتخاب نشده</div>
+    <div class="file-list" id="fileList"></div>
+
+    <details class="advanced">
+      <summary>تنظیمات پیشرفته</summary>
+      <div class="adv-row">
+        <label class="field-label" for="workers">تعداد پردازش هم‌زمان (خالی = خودکار)</label>
+        <input type="number" id="workers" min="1" placeholder="خودکار">
+        <div class="hint" id="cpuHint"></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <div class="actions">
+      <button class="btn btn-ghost" id="clearBtn" type="button">پاک کردن لیست</button>
+      <button class="btn btn-secondary" id="cancelBtn" type="button" style="display:none;">لغو پردازش</button>
+      <button class="btn btn-primary" id="startBtn" type="button">شروع پردازش</button>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-status">
+        <span id="progressText">در حال پردازش...</span>
+        <span id="progressCount">0/0</span>
+      </div>
+    </div>
+
+    <div class="log" id="log"></div>
+
+    <div class="summary" id="summary" style="display:none;"></div>
+
+    <div class="actions" id="downloadAllWrap" style="display:none; margin-top: 12px;">
+      <a id="downloadAllLink" href="#" target="_blank" style="text-decoration:none;">
+        <button class="btn btn-secondary" type="button">دانلود همه (ZIP)</button>
+      </a>
+    </div>
+  </div>
+
+  <p class="hint" style="text-align:center;">
+    فایل‌ها فقط روی همین کامپیوتر (127.0.0.1) پردازش می‌شوند و به هیچ سروری در اینترنت ارسال نمی‌شوند.
+  </p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var selectedFiles = [];
+  var currentJobId = null;
+  var pollTimer = null;
+  var running = false;
+
+  var el = {
+    banner: document.getElementById("banner"),
+    multiplier: document.getElementById("multiplier"),
+    dropzone: document.getElementById("dropzone"),
+    fileInput: document.getElementById("fileInput"),
+    fileCount: document.getElementById("fileCount"),
+    fileList: document.getElementById("fileList"),
+    maxFiles: document.getElementById("maxFiles"),
+    workers: document.getElementById("workers"),
+    cpuHint: document.getElementById("cpuHint"),
+    clearBtn: document.getElementById("clearBtn"),
+    startBtn: document.getElementById("startBtn"),
+    cancelBtn: document.getElementById("cancelBtn"),
+    progressWrap: document.getElementById("progressWrap"),
+    progressFill: document.getElementById("progressFill"),
+    progressText: document.getElementById("progressText"),
+    progressCount: document.getElementById("progressCount"),
+    log: document.getElementById("log"),
+    summary: document.getElementById("summary"),
+    downloadAllWrap: document.getElementById("downloadAllWrap"),
+    downloadAllLink: document.getElementById("downloadAllLink"),
+  };
+
+  var MAX_RECOMMENDED = 50;
+
+  function showBanner(msg) {
+    el.banner.textContent = msg;
+    el.banner.classList.add("show");
+  }
+  function hideBanner() {
+    el.banner.classList.remove("show");
+  }
+
+  function fmtSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  function renderFileList() {
+    el.fileList.innerHTML = "";
+    selectedFiles.forEach(function (f, idx) {
+      var item = document.createElement("div");
+      item.className = "file-item";
+      var name = document.createElement("span");
+      name.className = "name";
+      name.textContent = f.name;
+      var right = document.createElement("span");
+      right.style.display = "flex";
+      right.style.alignItems = "center";
+      var size = document.createElement("span");
+      size.className = "size";
+      size.textContent = fmtSize(f.size);
+      var rm = document.createElement("button");
+      rm.type = "button";
+      rm.textContent = "×";
+      rm.title = "حذف";
+      rm.addEventListener("click", function () {
+        selectedFiles.splice(idx, 1);
+        renderFileList();
+      });
+      right.appendChild(size);
+      right.appendChild(rm);
+      item.appendChild(name);
+      item.appendChild(right);
+      el.fileList.appendChild(item);
+    });
+
+    if (selectedFiles.length === 0) {
+      el.fileCount.textContent = "هیچ فایلی انتخاب نشده";
+      el.fileCount.classList.remove("warn");
+    } else {
+      el.fileCount.textContent = selectedFiles.length + " فایل انتخاب شده";
+      if (selectedFiles.length > MAX_RECOMMENDED) {
+        el.fileCount.textContent += " (بیشتر از حد توصیه‌شده، ولی همه پردازش می‌شوند)";
+        el.fileCount.classList.add("warn");
+      } else {
+        el.fileCount.classList.remove("warn");
+      }
+    }
+  }
+
+  function addFiles(fileListLike) {
+    var added = 0;
+    for (var i = 0; i < fileListLike.length; i++) {
+      var f = fileListLike[i];
+      if (!/\.xlsx$/i.test(f.name)) continue;
+      var dup = selectedFiles.some(function (x) { return x.name === f.name && x.size === f.size; });
+      if (!dup) {
+        selectedFiles.push(f);
+        added++;
+      }
+    }
+    renderFileList();
+    return added;
+  }
+
+  el.dropzone.addEventListener("click", function () { el.fileInput.click(); });
+  el.fileInput.addEventListener("change", function () {
+    addFiles(el.fileInput.files);
+    el.fileInput.value = "";
+  });
+  ["dragenter", "dragover"].forEach(function (evt) {
+    el.dropzone.addEventListener(evt, function (e) {
+      e.preventDefault();
+      el.dropzone.classList.add("dragover");
+    });
+  });
+  ["dragleave", "drop"].forEach(function (evt) {
+    el.dropzone.addEventListener(evt, function (e) {
+      e.preventDefault();
+      el.dropzone.classList.remove("dragover");
+    });
+  });
+  el.dropzone.addEventListener("drop", function (e) {
+    if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+  });
+
+  el.clearBtn.addEventListener("click", function () {
+    if (running) return;
+    selectedFiles = [];
+    renderFileList();
+    el.log.innerHTML = "";
+    el.summary.style.display = "none";
+    el.downloadAllWrap.style.display = "none";
+    el.progressWrap.classList.remove("show");
+    hideBanner();
+  });
+
+  function setRunning(state) {
+    running = state;
+    el.startBtn.disabled = state;
+    el.clearBtn.disabled = state;
+    el.cancelBtn.style.display = state ? "inline-block" : "none";
+  }
+
+  function addLogItem(entry) {
+    var item = document.createElement("div");
+    item.className = "log-item " + (entry.ok ? "ok" : "fail");
+
+    var icon = document.createElement("div");
+    icon.className = "icon";
+    icon.textContent = entry.ok ? "✅" : "❌";
+
+    var info = document.createElement("div");
+    info.className = "info";
+    var fname = document.createElement("div");
+    fname.className = "fname";
+    fname.textContent = entry.filename;
+    var msg = document.createElement("div");
+    msg.className = "msg";
+    msg.textContent = entry.message;
+    info.appendChild(fname);
+    info.appendChild(msg);
+
+    item.appendChild(icon);
+    item.appendChild(info);
+
+    if (entry.ok && entry.download_url) {
+      var a = document.createElement("a");
+      a.className = "dl";
+      a.href = entry.download_url;
+      a.textContent = "دانلود";
+      a.target = "_blank";
+      item.appendChild(a);
+    }
+
+    el.log.appendChild(item);
+  }
+
+  function poll() {
+    fetch("/api/jobs/" + currentJobId)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) {
+          showBanner(data.error);
+          finishUI(false);
+          return;
+        }
+        var renderedCount = el.log.children.length;
+        for (var i = renderedCount; i < data.results.length; i++) {
+          addLogItem(data.results[i]);
+        }
+        var pct = data.total > 0 ? Math.round((data.done / data.total) * 100) : 0;
+        el.progressFill.style.width = pct + "%";
+        el.progressCount.textContent = data.done + "/" + data.total;
+
+        if (data.finished) {
+          finishUI(true, data);
+        } else {
+          pollTimer = setTimeout(poll, 700);
+        }
+      })
+      .catch(function () {
+        pollTimer = setTimeout(poll, 1500);
+      });
+  }
+
+  function finishUI(success, data) {
+    setRunning(false);
+    if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+    if (!success) return;
+
+    el.progressText.textContent = "پردازش تمام شد";
+    el.summary.style.display = "block";
+    el.summary.innerHTML =
+      "پایان: <span class='ok-count'>" + data.success + " موفق</span>، " +
+      "<span class='fail-count'>" + data.fail + " ناموفق</span> از " + data.total + " فایل";
+
+    if (data.success > 0) {
+      el.downloadAllWrap.style.display = "flex";
+      el.downloadAllLink.href = "/api/jobs/" + currentJobId + "/download-all";
+    }
+  }
+
+  el.cancelBtn.addEventListener("click", function () {
+    if (!currentJobId) return;
+    fetch("/api/jobs/" + currentJobId + "/cancel", { method: "POST" }).catch(function () {});
+  });
+
+  el.startBtn.addEventListener("click", function () {
+    hideBanner();
+    if (running) return;
+    if (selectedFiles.length === 0) {
+      showBanner("ابتدا حداقل یک فایل اکسل انتخاب کنید.");
+      return;
+    }
+    var mult = el.multiplier.value.trim();
+    if (!mult || isNaN(Number(mult.replace(",", ".")))) {
+      showBanner("ضریب واردشده معتبر نیست. یک عدد مثل 1.15 وارد کنید.");
+      return;
+    }
+
+    var fd = new FormData();
+    fd.append("multiplier", mult);
+    if (el.workers.value) fd.append("workers", el.workers.value);
+    selectedFiles.forEach(function (f) { fd.append("files", f, f.name); });
+
+    el.log.innerHTML = "";
+    el.summary.style.display = "none";
+    el.downloadAllWrap.style.display = "none";
+    el.progressWrap.classList.add("show");
+    el.progressFill.style.width = "0%";
+    el.progressText.textContent = "در حال ارسال و پردازش...";
+    el.progressCount.textContent = "0/" + selectedFiles.length;
+
+    setRunning(true);
+
+    fetch("/api/process", { method: "POST", body: fd })
+      .then(function (r) { return r.json().then(function (data) { return { status: r.status, data: data }; }); })
+      .then(function (res) {
+        if (res.status !== 200) {
+          showBanner(res.data.error || "خطای ناشناخته در ارسال درخواست.");
+          setRunning(false);
+          el.progressWrap.classList.remove("show");
+          return;
+        }
+        currentJobId = res.data.job_id;
+        poll();
+      })
+      .catch(function () {
+        showBanner("ارتباط با سرور محلی برقرار نشد. مطمئن شوید برنامه در حال اجراست.");
+        setRunning(false);
+        el.progressWrap.classList.remove("show");
+      });
+  });
+
+  fetch("/api/system")
+    .then(function (r) { return r.json(); })
+    .then(function (info) {
+      MAX_RECOMMENDED = info.max_recommended_files || 50;
+      el.maxFiles.textContent = MAX_RECOMMENDED;
+      el.workers.placeholder = "خودکار (" + info.default_workers + ")";
+      el.cpuHint.textContent = "سیستم شما " + info.cpu_count + " هسته دارد؛ پیش‌فرض " + info.default_workers + " پردازش هم‌زمان است تا سیستم تحت فشار قرار نگیرد.";
+    })
+    .catch(function () {});
+
+  renderFileList();
+})();
+</script>
+</body>
+</html>
