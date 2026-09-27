@@ -205,6 +205,8 @@
     .proposal-sheet{ display:block !important; }
     .proposal-sheet, .proposal-sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
     @page{ margin:14mm; }
+    body.print-no-brand .watermark{ display:none !important; }
+    body.print-no-brand .prop-brand .logo-mark{ display:none !important; }
   }
   /* ---- base anchor reset (forklift.html never had one; it had no <a> tags before this merge) ---- */
   a{ color:inherit; text-decoration:none; }
@@ -1234,6 +1236,7 @@ function showView(name) {
       '<li>نمای روبرو/جانبی برای سادگی، فقط ردیف جلوییِ سلول‌ها یا مقطع ردیف‌ها را نشان می‌دهد (بدون جزئیات ردیف‌های پشتی).</li>' +
       '</ul></details>';
 
+    html += '<div class="checkbox-row" style="margin-top:14px;"><input type="checkbox" id="no-brand-toggle"><label for="no-brand-toggle">چاپ بدون لوگو و واترمارک</label></div>';
     html += '<button type="button" class="btn-print" id="btn-print-proposal">چاپ / دریافت خروجی پیشنهاد برای مشتری</button>';
     html += '<p class="hint" style="text-align:center;margin-top:6px;">در پنجرهٔ چاپ، برای دریافت فایل PDF گزینهٔ «Save as PDF» را انتخاب کنید.</p>';
 
@@ -1248,6 +1251,7 @@ function showView(name) {
     );
 
     document.getElementById('btn-print-proposal').addEventListener('click', function () {
+      document.body.classList.toggle('print-no-brand', document.getElementById('no-brand-toggle').checked);
       preparePrintProposal(lastResultCtx);
     });
 
@@ -1544,12 +1548,14 @@ function showView(name) {
       '<li>این نسخه صرفاً سایزینگ الکتریکی (ولتاژ/ظرفیت/توان) است و ابعاد فیزیکی یا وزن پک لیتیومی را محاسبه نمی‌کند.</li>' +
       '</ul></details>';
 
+    html += '<div class="checkbox-row" style="margin-top:14px;"><input type="checkbox" id="li-no-brand-toggle"><label for="li-no-brand-toggle">چاپ بدون لوگو و واترمارک</label></div>';
     html += '<button type="button" class="btn-print" id="li-btn-print-proposal">چاپ / دریافت خروجی پیشنهاد برای مشتری</button>';
     html += '<p class="hint" style="text-align:center;margin-top:6px;">در پنجرهٔ چاپ، برای دریافت فایل PDF گزینهٔ «Save as PDF» را انتخاب کنید.</p>';
 
     resultsBody.innerHTML = html;
 
     document.getElementById('li-btn-print-proposal').addEventListener('click', function () {
+      document.body.classList.toggle('print-no-brand', document.getElementById('li-no-brand-toggle').checked);
       preparePrintProposal(lastResultCtx);
     });
 
@@ -2056,12 +2062,14 @@ function showView(name) {
       '<li>این دیتابیس نسخه‌ی اصلاح‌شده‌ی دستی کاربر است (Trust؛ Titan Plus ۱ تا ۳kVA؛ Titan Promax؛ Titan Plus سه‌فاز/تک‌فاز؛ Comet Plus در دو رنج توان).</li>' +
       '</ul></details>';
 
+    html += '<div class="checkbox-row" style="margin-top:14px;"><input type="checkbox" id="ups-no-brand-toggle"><label for="ups-no-brand-toggle">چاپ بدون لوگو و واترمارک</label></div>';
     html += '<button type="button" class="btn-print" id="ups-btn-print-proposal">چاپ / دریافت خروجی پیشنهاد برای مشتری</button>';
     html += '<p class="hint" style="text-align:center;margin-top:6px;">در پنجرهٔ چاپ، برای دریافت فایل PDF گزینهٔ «Save as PDF» را انتخاب کنید.</p>';
 
     resultsBody.innerHTML = html;
 
     document.getElementById('ups-btn-print-proposal').addEventListener('click', function () {
+      document.body.classList.toggle('print-no-brand', document.getElementById('ups-no-brand-toggle').checked);
       preparePrintProposal(lastResultCtx);
     });
 
