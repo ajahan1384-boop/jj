@@ -6,9 +6,12 @@ Flask) تا هم نسخه دسکتاپ (price_updater.py) و هم نسخه وب 
 همین یک تابع استفاده کنند.
 
 هر عدد ستون J («قیمت فروش») شیت «داده ها» در ضریب داده‌شده ضرب می‌شود و
-نتیجه تا ۴ رقم اعشار به سمت بالا (Ceiling) گرد می‌شود. بقیه‌ی فایل (شیت
-راهنما، استایل‌ها، ستون‌های دیگر) دست‌نخورده باقی می‌ماند چون فایل ورودی
-به‌جای ساخت از نو، مستقیماً ویرایش و ذخیره می‌شود.
+نتیجه به سمت بالا (Ceiling) تا نزدیک‌ترین مضرب ۱۰۰ ریال گرد می‌شود و به‌صورت
+عدد صحیح ذخیره می‌شود. طبق شیت «راهنما»ی همین فایل دیجی‌کالا (نکات مربوط به
+پیغام‌های خطا)، ستون «قیمت فروش» باید عدد صحیح باشد و دو رقم آخر آن صفر
+باشد؛ در غیر این صورت دیجی‌کالا فایل را رد می‌کند. بقیه‌ی فایل (شیت راهنما،
+استایل‌ها، ستون‌های دیگر) دست‌نخورده باقی می‌ماند چون فایل ورودی به‌جای
+ساخت از نو، مستقیماً ویرایش و ذخیره می‌شود.
 """
 
 from __future__ import annotations
@@ -29,7 +32,7 @@ SHEET_NAME = "داده ها"
 PRICE_COLUMN_INDEX = 10  # ستون J
 PRICE_COLUMN_LETTER = "J"
 MAX_RECOMMENDED_FILES = 50
-DECIMAL_PLACES = Decimal("0.0001")
+PRICE_ROUNDING_STEP = Decimal("100")  # قیمت فروش دیجی‌کالا باید عدد صحیح و مضرب ۱۰۰ ریال باشد
 
 
 @dataclass
@@ -42,14 +45,17 @@ class FileResult:
     rows_skipped: int = 0
 
 
-def _round_up_4(value: Decimal) -> Decimal:
-    return value.quantize(DECIMAL_PLACES, rounding=ROUND_CEILING)
+def _round_up_to_hundred(value: Decimal) -> int:
+    """گرد کردن به سمت بالا تا نزدیک‌ترین مضرب ۱۰۰ ریال (الزام فرمت دیجی‌کالا)."""
+    steps = (value / PRICE_ROUNDING_STEP).to_integral_value(rounding=ROUND_CEILING)
+    return int(steps * PRICE_ROUNDING_STEP)
 
 
 def process_one_file(input_path: str, output_dir: str, multiplier_str: str) -> FileResult:
     """یک فایل اکسل را می‌خواند، ستون J شیت «داده ها» را ضربدر ضریب می‌کند
-    و تا ۴ رقم اعشار گرد به بالا می‌کند. همه خطاها اینجا گرفته می‌شوند تا
-    کل برنامه هیچ‌وقت با خطای یک فایل متوقف/کرش نشود."""
+    و به سمت بالا تا نزدیک‌ترین مضرب ۱۰۰ ریال گرد می‌کند (مطابق الزام دیجی‌کالا
+    که قیمت فروش باید عدد صحیح و دو رقم آخرش صفر باشد). همه خطاها اینجا گرفته
+    می‌شوند تا کل برنامه هیچ‌وقت با خطای یک فایل متوقف/کرش نشود."""
     filename = os.path.basename(input_path)
     try:
         try:
@@ -96,8 +102,8 @@ def process_one_file(input_path: str, output_dir: str, multiplier_str: str) -> F
                 continue
             if isinstance(value, (int, float)):
                 try:
-                    new_value = _round_up_4(Decimal(str(value)) * multiplier)
-                    cell.value = float(new_value)
+                    new_value = _round_up_to_hundred(Decimal(str(value)) * multiplier)
+                    cell.value = new_value
                     rows_updated += 1
                 except (InvalidOperation, ValueError):
                     rows_skipped += 1
